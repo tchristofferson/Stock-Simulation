@@ -46,13 +46,4 @@
             android:textAlignment="textEnd" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/textView18"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:paddingStart="10dp"
-        android:text="›"
-        android:textSize="30sp"
-        android:textStyle="bold" />
 </LinearLayout>

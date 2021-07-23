@@ -9,14 +9,14 @@
     android:paddingEnd="5dp">
 
     <TextView
-        android:id="@+id/textView23"
+        android:id="@+id/activity_trade_stock_symbol_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="GOOG"
         android:textSize="24sp" />
 
     <TextView
-        android:id="@+id/textView24"
+        android:id="@+id/activity_trade_available_funds_textview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="$11.71 available" />
@@ -28,7 +28,7 @@
         android:orientation="horizontal">
 
         <RadioButton
-            android:id="@+id/radioButton"
+            android:id="@+id/buy_radio_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -37,7 +37,7 @@
             android:textSize="20sp" />
 
         <RadioButton
-            android:id="@+id/radioButton2"
+            android:id="@+id/sell_radio_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -57,28 +57,25 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView31"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 android:text="Number of Shares"
-                android:textSize="20sp"
-                android:layout_marginBottom="10dp"/>
+                android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/textView32"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 android:text="Market Price"
-                android:textSize="20sp"
-                android:layout_marginBottom="10dp"/>
+                android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/textView34"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 android:text="Estimated Cost"
-                android:textSize="20sp"
-                android:layout_marginBottom="10dp"/>
+                android:textSize="20sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -88,7 +85,7 @@
             android:orientation="vertical">
 
             <EditText
-                android:id="@+id/editTextNumber4"
+                android:id="@+id/activity_trade_shares_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -101,7 +98,7 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/textView33"
+                android:id="@+id/activity_trade_market_price_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="$2,653.81"
@@ -110,7 +107,7 @@
                 android:layout_marginBottom="10dp"/>
 
             <TextView
-                android:id="@+id/textView35"
+                android:id="@+id/activity_trade_estimated_cost_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="$0.00"
@@ -122,7 +119,7 @@
     </LinearLayout>
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/activity_trade_submit_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Submit" />

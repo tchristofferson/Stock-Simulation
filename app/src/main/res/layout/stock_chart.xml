@@ -5,8 +5,9 @@
     android:orientation="vertical">
 
     <com.anychart.AnyChartView
+        android:id="@+id/stock_chart_view"
         android:layout_width="match_parent"
-        android:layout_height="300dp" >
+        android:layout_height="300dp">
 
     </com.anychart.AnyChartView>
 
@@ -18,7 +19,7 @@
         android:padding="0dp">
 
         <Button
-            android:id="@+id/button3"
+            android:id="@+id/one_day_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="1dp"
@@ -29,7 +30,7 @@
             android:textSize="8sp" />
 
         <Button
-            android:id="@+id/button4"
+            android:id="@+id/one_week_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="1dp"
@@ -40,7 +41,7 @@
             android:textSize="8sp" />
 
         <Button
-            android:id="@+id/button5"
+            android:id="@+id/one_month_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="1dp"
@@ -51,7 +52,7 @@
             android:textSize="8sp" />
 
         <Button
-            android:id="@+id/button6"
+            android:id="@+id/three_month_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="1dp"
@@ -62,7 +63,7 @@
             android:textSize="8sp" />
 
         <Button
-            android:id="@+id/button7"
+            android:id="@+id/one_year_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="1dp"
@@ -73,14 +74,14 @@
             android:textSize="8sp" />
 
         <Button
-            android:id="@+id/button8"
+            android:id="@+id/five_year_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="1dp"
             android:layout_marginEnd="1dp"
             android:layout_weight="1"
             android:padding="0dp"
-            android:text="All"
+            android:text="5Y"
             android:textSize="8sp" />
     </LinearLayout>
 </LinearLayout>

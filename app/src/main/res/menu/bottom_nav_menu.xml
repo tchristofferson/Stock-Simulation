@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/home"
+    <item android:id="@+id/nav_home"
         android:title="@string/portfolio"
         android:icon="@drawable/ic_baseline_pie_chart_24" />
 
-    <item android:id="@+id/search"
+    <item android:id="@+id/nav_search"
         android:title="@string/search"
         android:icon="@drawable/ic_baseline_search_24" />
 
-    <item android:id="@+id/settings"
+    <item android:id="@+id/nav_settings"
         android:title="@string/settings"
         android:icon="@drawable/ic_baseline_settings_24" />
 </menu>

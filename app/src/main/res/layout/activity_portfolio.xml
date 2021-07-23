@@ -10,7 +10,6 @@
     tools:context=".MainActivity">
 
     <ScrollView
-        android:id="@+id/scrollView3"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -24,7 +23,6 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/textView6"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Investing"
@@ -41,7 +39,6 @@
             <include layout="@layout/stock_chart" />
 
             <TextView
-                android:id="@+id/textView8"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
@@ -49,6 +46,7 @@
                 android:textSize="20sp" />
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/watch_list_recylerview"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:listitem="@layout/watch_list_item" />

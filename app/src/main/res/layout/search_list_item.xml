@@ -6,7 +6,7 @@
     android:layout_marginBottom="10dp">
 
     <TextView
-        android:id="@+id/textView30"
+        android:id="@+id/search_company_name_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Alphabet"
@@ -15,15 +15,15 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView36"
+        android:id="@+id/search_stock_symbol_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="GOOG"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView30" />
+        app:layout_constraintTop_toBottomOf="@+id/search_company_name_textview" />
 
     <RadioButton
-        android:id="@+id/radioButton5"
+        android:id="@+id/add_watch_list_radio_btn"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"

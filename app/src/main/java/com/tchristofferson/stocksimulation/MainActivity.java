@@ -1,15 +1,9 @@
 package com.tchristofferson.stocksimulation;
 
 import android.os.Bundle;
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.widget.FrameLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.tchristofferson.stocksimulation.models.Stock;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.tchristofferson.stocksimulation.fragments.PortfolioFragment;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -21,9 +15,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Fragment portfolio = new Fragment(R.layout.activity_portfolio);
-        Fragment search = new Fragment(R.layout.activity_search);
-        Fragment settings = new Fragment(R.layout.activity_settings);
+        Fragment portfolio = new PortfolioFragment();
+        Fragment search = new Fragment(R.layout.fragment_search);
+        Fragment settings = new Fragment(R.layout.fragment_settings);
 
         setCurrentFragment(portfolio);
 

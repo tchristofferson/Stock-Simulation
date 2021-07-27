@@ -5,7 +5,6 @@ import android.view.View;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.Description;
-import com.github.mikephil.charting.components.IMarker;
 import com.github.mikephil.charting.components.MarkerView;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -65,7 +64,6 @@ public class StockChartFragment extends Fragment {
         LineDataSet dataSet = new LineDataSet(entries, "Price");
         dataSet.setDrawValues(false);
         dataSet.setDrawCircles(false);
-        dataSet.setValueTextSize(10);
 
         LineData lineData = new LineData(dataSet);
         stockChart.setData(lineData);

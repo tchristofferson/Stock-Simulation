@@ -5,6 +5,8 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.tchristofferson.stocksimulation.R;
+import com.tchristofferson.stocksimulation.StockSimulationApplication;
+import com.tchristofferson.stocksimulation.adapters.WatchListAdapter;
 import com.tchristofferson.stocksimulation.models.PriceTimePair;
 
 import java.util.ArrayList;
@@ -19,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class PortfolioFragment extends StockChartFragment {
 
     private TextView investingTextView;
+    private WatchListAdapter adapter;
     private RecyclerView watchList;
 
     public PortfolioFragment() {
@@ -31,6 +34,8 @@ public class PortfolioFragment extends StockChartFragment {
 
         investingTextView = getView().findViewById(R.id.investing_amount_textview);
         watchList = getView().findViewById(R.id.watch_list_recylerview);
+        adapter = new WatchListAdapter(((StockSimulationApplication) requireActivity().getApplication()));
+        watchList.setAdapter(adapter);
 
         List<PriceTimePair> prices = new ArrayList<>(5);
         prices.add(new PriceTimePair("7/10", 10D));

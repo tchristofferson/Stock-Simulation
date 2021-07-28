@@ -1,5 +1,8 @@
 package com.tchristofferson.stocksimulation.adapters;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +12,8 @@ import android.widget.TextView;
 
 import com.tchristofferson.stocksimulation.R;
 import com.tchristofferson.stocksimulation.StockSimulationApplication;
+import com.tchristofferson.stocksimulation.Util;
+import com.tchristofferson.stocksimulation.activities.StockActivity;
 
 import java.util.List;
 
@@ -20,10 +25,12 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.View
     private static final int POSITIVE_COLOR = Color.rgb(0, 200, 5);
     private static final int NEGATIVE_COLOR = Color.rgb(255, 80, 0);
 
+    private final Context context;
     private final List<String> watchList;
 
-    public WatchListAdapter(StockSimulationApplication application) {
-        watchList = application.getPortfolio().getWatchList();
+    public WatchListAdapter(Activity activity) {
+        this.context = activity;
+        watchList = ((StockSimulationApplication) activity.getApplication()).getPortfolio().getWatchList();
     }
 
     @NonNull
@@ -37,7 +44,14 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.View
 
     @Override
     public void onBindViewHolder(@NonNull WatchListAdapter.ViewHolder holder, int position) {
-        holder.symbolTextview.setText(watchList.get(position));
+        String symbol = watchList.get(position);
+        holder.symbolTextview.setText(symbol);
+
+        holder.layout.setOnClickListener(v -> {
+            Intent intent = new Intent(context, StockActivity.class);
+            intent.putExtra(context.getString(R.string.symbol_key), Util.formatSymbol(symbol));
+            WatchListAdapter.this.context.startActivity(intent);
+        });
     }
 
     @Override
@@ -47,7 +61,8 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.View
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
-        private final LinearLayout linearLayout;
+        private final LinearLayout layout;
+        private final LinearLayout performanceLayout;
         private final TextView symbolTextview;
         private final TextView companyTextview;
         private final TextView priceTextview;
@@ -55,7 +70,8 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.View
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            linearLayout = itemView.findViewById(R.id.watch_list_performance_layout);
+            this.layout = itemView.findViewById(R.id.watch_list_item_layout);
+            performanceLayout = itemView.findViewById(R.id.watch_list_performance_layout);
             symbolTextview = itemView.findViewById(R.id.watch_list_stock_symbol_textview);
             companyTextview = itemView.findViewById(R.id.watch_list_company_name_textview);
             priceTextview = itemView.findViewById(R.id.watch_list_stock_price_textview);

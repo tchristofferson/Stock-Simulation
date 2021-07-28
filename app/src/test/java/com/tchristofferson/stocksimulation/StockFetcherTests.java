@@ -23,7 +23,7 @@ public class StockFetcherTests {
 
     @Test
     public void testGetPriceHistory() throws IOException {
-        Map<String, Double> history = stockFetcher.getPriceHistory("AAPL", TimeFrame.ONE_DAY);
+        Map<String, Double> history = stockFetcher.fetchPriceHistory("AAPL", TimeFrame.ONE_DAY);
         assertNotNull(history);
         assertFalse(history.isEmpty());
         Logger.getAnonymousLogger().info(history.toString());

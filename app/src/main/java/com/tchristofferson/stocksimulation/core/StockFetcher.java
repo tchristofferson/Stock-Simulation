@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tchristofferson.stocksimulation.Util;
+import com.tchristofferson.stocksimulation.models.StockInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,13 +29,27 @@ public class StockFetcher {
     private static final String DAY_PRICES_URL = API_URL + SYMBOL + "/intraday-prices/chartIEXOnly" + API_KEY_STRING;
     private static final String QUOTE_URL = API_URL + SYMBOL + "/quote" + API_KEY_STRING;
 
+    public StockInfo fetchStockInfo(String symbol) throws IOException {
+        JsonElement jsonElement = getJson(QUOTE_URL, symbol, null);
+        JsonObject obj = jsonElement.getAsJsonObject();
+        String companyName = obj.get("companyName").getAsString();
+        double latestPrice = obj.get("latestPrice").getAsDouble();
+
+        return new StockInfo(symbol, companyName, latestPrice);
+    }
+
+    public String fetchCompanyName(String symbol) throws IOException {
+        JsonElement jsonElement = getJson(QUOTE_URL, symbol, null);
+        return jsonElement.getAsJsonObject().get("companyName").getAsString();
+    }
+
     public double fetchPrice(String symbol) throws IOException {
         JsonElement jsonElement = getJson(QUOTE_URL, symbol, null);
         return jsonElement.getAsJsonObject().get("latestPrice").getAsDouble();
     }
 
     //Returns LinkedHashMap to maintain insertion order
-    public Map<String, Double> getPriceHistory(String symbol, TimeFrame timeFrame) throws IOException {
+    public Map<String, Double> fetchPriceHistory(String symbol, TimeFrame timeFrame) throws IOException {
         //Need to fetch today's price because it isn't included in historical data
         boolean isOneDay = timeFrame == TimeFrame.ONE_DAY || timeFrame == TimeFrame.LATEST;
         JsonElement jsonElement = getJson(isOneDay ? DAY_PRICES_URL : HISTORICAL_URL, symbol, timeFrame);

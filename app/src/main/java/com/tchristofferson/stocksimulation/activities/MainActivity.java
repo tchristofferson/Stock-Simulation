@@ -1,8 +1,9 @@
-package com.tchristofferson.stocksimulation;
+package com.tchristofferson.stocksimulation.activities;
 
 import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.tchristofferson.stocksimulation.R;
 import com.tchristofferson.stocksimulation.fragments.PortfolioFragment;
 
 import androidx.appcompat.app.AppCompatActivity;

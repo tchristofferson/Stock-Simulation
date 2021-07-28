@@ -3,6 +3,7 @@ package com.tchristofferson.stocksimulation.core;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.tchristofferson.stocksimulation.Util;
+import com.tchristofferson.stocksimulation.models.StockInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,21 +14,19 @@ import java.util.concurrent.TimeUnit;
 public class StockCache {
 
     private final StockFetcher fetcher;
-    private final Cache<String, Double> prices;
     private final File filesDir;
+    private final Cache<String, StockInfo> stockInfoCache;
 
     public StockCache(File filesDir) {
         this.fetcher = new StockFetcher();
-        this.prices = CacheBuilder.newBuilder()
-                        .expireAfterWrite(30, TimeUnit.SECONDS)
-                        .initialCapacity(10)
-                        .build();
-
         this.filesDir = filesDir;
+        this.stockInfoCache = CacheBuilder.newBuilder()
+                        .expireAfterWrite(30, TimeUnit.SECONDS)
+                        .build();
     }
 
-    public double getPrice(String symbol) throws ExecutionException {
-        return prices.get(Util.formatSymbol(symbol), () -> fetcher.fetchPrice(Util.formatSymbol(symbol)));
+    public StockInfo getStockInfo(String symbol) throws ExecutionException {
+        return stockInfoCache.get(Util.formatSymbol(symbol), () -> fetcher.fetchStockInfo(symbol));
     }
 
     public Map<String, Double> getHistoricalData(String symbol, TimeFrame timeFrame) throws IOException {
@@ -36,7 +35,7 @@ public class StockCache {
 
         if (!file.exists()) {
             //Fetch using StockFetcher and save to file
-            prices = fetcher.getPriceHistory(symbol, timeFrame);
+            prices = fetcher.fetchPriceHistory(symbol, timeFrame);
             writeStockHistory(symbol, prices);
             return prices;
         }

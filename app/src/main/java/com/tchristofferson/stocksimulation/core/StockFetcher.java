@@ -5,13 +5,16 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tchristofferson.stocksimulation.Util;
+import com.tchristofferson.stocksimulation.models.PriceTimePair;
 import com.tchristofferson.stocksimulation.models.StockInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -48,30 +51,29 @@ public class StockFetcher {
         return jsonElement.getAsJsonObject().get("latestPrice").getAsDouble();
     }
 
-    //Returns LinkedHashMap to maintain insertion order
-    public Map<String, Double> fetchPriceHistory(String symbol, TimeFrame timeFrame) throws IOException {
+    public List<PriceTimePair> fetchPriceHistory(String symbol, TimeFrame timeFrame) throws IOException {
         //Need to fetch today's price because it isn't included in historical data
         boolean isOneDay = timeFrame == TimeFrame.ONE_DAY || timeFrame == TimeFrame.LATEST;
         JsonElement jsonElement = getJson(isOneDay ? DAY_PRICES_URL : HISTORICAL_URL, symbol, timeFrame);
         JsonArray jsonArray = jsonElement.getAsJsonArray();
-        Map<String, Double> priceHistory = new LinkedHashMap<>(jsonArray.size());
+        List<PriceTimePair> pairs = new ArrayList<>(jsonArray.size());
 
         if (timeFrame == TimeFrame.LATEST) {
             JsonObject obj = jsonArray.get(jsonArray.size() - 1).getAsJsonObject();
             String label = obj.get("label").getAsString();
             double price = obj.get("close").getAsDouble();
-            priceHistory.put(label, price);
+            pairs.add(new PriceTimePair(label, price));
         } else {
             for (JsonElement element : jsonArray) {
                 JsonObject obj = element.getAsJsonObject();
                 String label = obj.get("label").getAsString();
                 double price = obj.get("close").getAsDouble();
 
-                priceHistory.put(label, price);
+                pairs.add(new PriceTimePair(label, price));
             }
         }
 
-        return priceHistory;
+        return pairs;
     }
 
     private JsonElement getJson(String urlString, String symbol, TimeFrame timeFrame) throws IOException {

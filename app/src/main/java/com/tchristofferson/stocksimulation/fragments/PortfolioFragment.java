@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.tchristofferson.stocksimulation.R;
 import com.tchristofferson.stocksimulation.StockSimulationApplication;
+import com.tchristofferson.stocksimulation.Util;
 import com.tchristofferson.stocksimulation.adapters.WatchListAdapter;
 import com.tchristofferson.stocksimulation.models.PriceTimePair;
 
@@ -50,6 +51,6 @@ public class PortfolioFragment extends StockChartFragment {
         prices.add(new PriceTimePair("7/13", 12D));
         prices.add(new PriceTimePair("7/14", 15.3D));
 
-        fillChart(prices);
+        Util.fillStockChart(stockChart, prices);
     }
 }

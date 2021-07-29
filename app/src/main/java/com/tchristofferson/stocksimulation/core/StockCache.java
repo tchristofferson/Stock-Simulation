@@ -3,12 +3,16 @@ package com.tchristofferson.stocksimulation.core;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.tchristofferson.stocksimulation.Util;
+import com.tchristofferson.stocksimulation.models.PriceTimePair;
 import com.tchristofferson.stocksimulation.models.StockInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class StockCache {
@@ -29,8 +33,8 @@ public class StockCache {
         return stockInfoCache.get(Util.formatSymbol(symbol), () -> fetcher.fetchStockInfo(symbol));
     }
 
-    public Map<String, Double> getHistoricalData(String symbol, TimeFrame timeFrame) throws IOException {
-        Map<String, Double> prices;
+    public List<PriceTimePair> getHistoricalData(String symbol, TimeFrame timeFrame) throws IOException {
+        List<PriceTimePair> prices;
         File file = new File(filesDir, Util.formatSymbol(symbol) + ".json");
 
         if (!file.exists()) {
@@ -43,11 +47,11 @@ public class StockCache {
         return readStockHistory(symbol);
     }
 
-    private void writeStockHistory(String symbol, Map<String, Double> prices) {
+    private void writeStockHistory(String symbol, List<PriceTimePair> prices) {
         //TODO: Implement writeStockHistory
     }
 
-    private Map<String, Double> readStockHistory(String symbol) {
+    private List<PriceTimePair> readStockHistory(String symbol) {
         //TODO: Implement readStockHistory
         return null;
     }

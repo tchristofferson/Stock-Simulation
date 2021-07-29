@@ -25,14 +25,12 @@
                 android:id="@+id/activity_stock_symbol_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="GOOG"
                 android:textSize="14sp" />
 
             <TextView
                 android:id="@+id/activity_stock_company_name_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Alphabet"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -40,7 +38,7 @@
                 android:id="@+id/activity_stock_stock_price_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="$2,585.08"
+                android:text="$0.00"
                 android:textSize="20sp" />
 
             <include layout="@layout/stock_chart" />
@@ -71,7 +69,7 @@
                         android:id="@+id/stock_quantity_textview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="10" />
+                        android:text="0" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -83,7 +81,7 @@
                         android:id="@+id/today_returns_textview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="$150.50" />
+                        android:text="$0.00" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -101,7 +99,7 @@
                         android:id="@+id/stock_equity_textview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="$25,850.8" />
+                        android:text="$0.00" />
 
                     <TextView
                         android:layout_width="match_parent"
@@ -113,7 +111,7 @@
                         android:id="@+id/total_returns_textview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="$1,456.35" />
+                        android:text="$0.00" />
                 </LinearLayout>
             </LinearLayout>
 

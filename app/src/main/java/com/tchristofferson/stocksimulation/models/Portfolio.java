@@ -26,6 +26,15 @@ public class Portfolio {
         return stocks;
     }
 
+    public Stock getStock(String symbol) {
+        for (Stock stock : stocks) {
+            if (stock.getSymbol().equalsIgnoreCase(symbol))
+                return stock;
+        }
+
+        return null;
+    }
+
     public List<String> getWatchList() {
         return watchList;
     }

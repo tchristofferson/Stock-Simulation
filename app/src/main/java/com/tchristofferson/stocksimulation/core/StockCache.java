@@ -8,6 +8,7 @@ import com.tchristofferson.stocksimulation.models.StockInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -29,8 +30,27 @@ public class StockCache {
                         .build();
     }
 
-    public StockInfo getStockInfo(String symbol) throws ExecutionException {
-        return stockInfoCache.get(Util.formatSymbol(symbol), () -> fetcher.fetchStockInfo(symbol));
+    public List<StockInfo> getStockInfo(String... symbols) throws IOException {
+        List<String> notCached = new ArrayList<>(symbols.length);
+        List<StockInfo> cachedStockInfo = new ArrayList<>(symbols.length);
+
+        for (String symbol : symbols) {
+            StockInfo stockInfo = stockInfoCache.getIfPresent(Util.formatSymbol(symbol));
+
+            if (stockInfo != null) {
+                cachedStockInfo.add(stockInfo);
+            } else {
+                notCached.add(Util.formatSymbol(symbol));
+            }
+        }
+
+        if (notCached.isEmpty())
+            return cachedStockInfo;
+
+        List<StockInfo> stockInfoList = new ArrayList<>(cachedStockInfo);
+        stockInfoList.addAll(fetcher.fetchStockInfo(notCached.toArray(new String[0])));
+
+        return stockInfoList;
     }
 
     public List<PriceTimePair> getHistoricalData(String symbol, TimeFrame timeFrame) throws IOException {

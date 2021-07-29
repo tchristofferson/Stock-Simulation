@@ -76,4 +76,17 @@ public class Util {
         stockChart.invalidate();
     }
 
+    public static String joinStrings(String separator, String... words) {
+        if (words.length == 0)
+            return "";
+
+        StringBuilder builder = new StringBuilder(words[0]);
+
+        for (int i = 1; i < words.length; i++) {
+            builder.append(separator).append(words[i]);
+        }
+
+        return builder.toString();
+    }
+
 }

@@ -16,7 +16,6 @@ import com.tchristofferson.stocksimulation.models.StockInfo;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,6 +27,14 @@ import androidx.appcompat.app.AppCompatActivity;
 public class StockActivity extends AppCompatActivity {
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
+    private TextView symbolTextview;
+    private TextView companyNameTextview;
+    private TextView stockPriceTextview;
+    private LineChart stockChart;
+    private TextView stockQuantityTextview;
+    private TextView stockEquityTextview;
+    private TextView todayReturnsTextview;
+    private TextView totalReturnsTextview;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,24 +47,42 @@ public class StockActivity extends AppCompatActivity {
         Portfolio portfolio = application.getPortfolio();
 
         //Top text views
-        TextView symbolTextview = findViewById(R.id.activity_stock_symbol_textview);
-        TextView companyNameTextview = findViewById(R.id.activity_stock_company_name_textview);
-        TextView stockPriceTextview = findViewById(R.id.activity_stock_stock_price_textview);
+        symbolTextview = findViewById(R.id.activity_stock_symbol_textview);
+        companyNameTextview = findViewById(R.id.activity_stock_company_name_textview);
+        stockPriceTextview = findViewById(R.id.activity_stock_stock_price_textview);
 
-        LineChart stockChart = findViewById(R.id.stock_chart_view);
+        stockChart = findViewById(R.id.stock_chart_view);
         Util.setupStockChart(stockChart, this);
 
         //Bottom text views
-        TextView stockQuantityTextview = findViewById(R.id.stock_quantity_textview);
-        TextView stockEquityTextview = findViewById(R.id.stock_equity_textview);
-        TextView todayReturnsTextview = findViewById(R.id.today_returns_textview);
-        TextView totalReturnsTextview = findViewById(R.id.total_returns_textview);
+        stockQuantityTextview = findViewById(R.id.stock_quantity_textview);
+        stockEquityTextview = findViewById(R.id.stock_equity_textview);
+        todayReturnsTextview = findViewById(R.id.today_returns_textview);
+        totalReturnsTextview = findViewById(R.id.total_returns_textview);
 
         symbolTextview.setText(symbol);
         Stock stock = portfolio.getStock(symbol);
+        loadStockData(symbol, application, stock);
+    }
+
+    private void loadStockData(String symbol, StockSimulationApplication application, Stock stock) {
         int shares = stock == null ? 0 : stock.getShares();
         double invested = stock == null ? 0 : stock.getInvested();
-        Future<StockInfo> futureStockInfo = executorService.submit(() -> application.getStockCache().getStockInfo(symbol));
+        Future<StockInfo> futureStockInfo = executorService.submit(() -> {
+            List<StockInfo> stockInfoList;
+
+            try {
+                stockInfoList = application.getStockCache().getStockInfo(symbol);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+
+            if (stockInfoList.isEmpty())
+                return null;
+
+            return stockInfoList.get(0);
+        });
 
         executorService.submit(() -> {
             List<PriceTimePair> prices;
@@ -79,11 +104,14 @@ public class StockActivity extends AppCompatActivity {
 
             runOnUiThread(() -> {
                 Util.fillStockChart(stockChart, prices);
-                stockEquityTextview.setText(String.format("$%s", shares * stockInfo.getLatestPrice()));
-                companyNameTextview.setText(stockInfo.getCompanyName());
-                stockPriceTextview.setText(String.format("$%s", stockInfo.getLatestPrice()));
                 stockQuantityTextview.setText(String.valueOf(shares));
-                totalReturnsTextview.setText(String.format("$%s", Util.formatMoney(shares * stockInfo.getLatestPrice() - invested)));
+
+                if (stockInfo != null) {
+                    stockEquityTextview.setText(String.format("$%s", Util.formatMoney(shares * stockInfo.getLatestPrice())));
+                    companyNameTextview.setText(stockInfo.getCompanyName());
+                    stockPriceTextview.setText(String.format("$%s", stockInfo.getLatestPrice()));
+                    totalReturnsTextview.setText(String.format("$%s", Util.formatMoney(shares * stockInfo.getLatestPrice() - invested)));
+                }
             });
         });
     }

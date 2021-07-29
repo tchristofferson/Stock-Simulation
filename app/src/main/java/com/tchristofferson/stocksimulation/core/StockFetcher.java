@@ -23,6 +23,7 @@ public class StockFetcher {
 
     //Placeholders
     private static final String SYMBOL = "%symbol%";
+    private static final String SYMBOLS = "%symbols%";
     private static final String TIME = "%time%";
 
     private static final String API_URL = "https://cloud.iexapis.com/stable/stock/";
@@ -31,30 +32,30 @@ public class StockFetcher {
     private static final String HISTORICAL_URL = API_URL + SYMBOL + "/chart/" + TIME + API_KEY_STRING;
     private static final String DAY_PRICES_URL = API_URL + SYMBOL + "/intraday-prices/chartIEXOnly" + API_KEY_STRING;
     private static final String QUOTE_URL = API_URL + SYMBOL + "/quote" + API_KEY_STRING;
+    private final String QUOTE_MULTIPLE_URL = API_URL + "market/batch?symbols=" + SYMBOLS + "&types=quote&token=" + API_KEY;
 
-    public StockInfo fetchStockInfo(String symbol) throws IOException {
-        JsonElement jsonElement = getJson(QUOTE_URL, symbol, null);
+    public List<StockInfo> fetchStockInfo(String... symbols) throws IOException {
+        if (symbols.length == 0)
+            throw new IllegalArgumentException("Must provide 1 or more symbols!");
+
+        List<StockInfo> stockInfoList = new ArrayList<>(symbols.length);
+        JsonElement jsonElement = getJson(QUOTE_MULTIPLE_URL, null, symbols);
         JsonObject obj = jsonElement.getAsJsonObject();
-        String companyName = obj.get("companyName").getAsString();
-        double latestPrice = obj.get("latestPrice").getAsDouble();
 
-        return new StockInfo(symbol, companyName, latestPrice);
-    }
+        for (String symbol : obj.keySet()) {
+            JsonObject quote = obj.getAsJsonObject(symbol).getAsJsonObject("quote");
+            String companyName = quote.get("companyName").getAsString();
+            double price = quote.get("latestPrice").getAsDouble();
+            stockInfoList.add(new StockInfo(symbol, companyName, price));
+        }
 
-    public String fetchCompanyName(String symbol) throws IOException {
-        JsonElement jsonElement = getJson(QUOTE_URL, symbol, null);
-        return jsonElement.getAsJsonObject().get("companyName").getAsString();
-    }
-
-    public double fetchPrice(String symbol) throws IOException {
-        JsonElement jsonElement = getJson(QUOTE_URL, symbol, null);
-        return jsonElement.getAsJsonObject().get("latestPrice").getAsDouble();
+        return stockInfoList;
     }
 
     public List<PriceTimePair> fetchPriceHistory(String symbol, TimeFrame timeFrame) throws IOException {
         //Need to fetch today's price because it isn't included in historical data
         boolean isOneDay = timeFrame == TimeFrame.ONE_DAY || timeFrame == TimeFrame.LATEST;
-        JsonElement jsonElement = getJson(isOneDay ? DAY_PRICES_URL : HISTORICAL_URL, symbol, timeFrame);
+        JsonElement jsonElement = getJson(isOneDay ? DAY_PRICES_URL : HISTORICAL_URL, timeFrame, symbol);
         JsonArray jsonArray = jsonElement.getAsJsonArray();
         List<PriceTimePair> pairs = new ArrayList<>(jsonArray.size());
 
@@ -76,8 +77,13 @@ public class StockFetcher {
         return pairs;
     }
 
-    private JsonElement getJson(String urlString, String symbol, TimeFrame timeFrame) throws IOException {
-        urlString = urlString.replace(SYMBOL, Util.formatSymbol(symbol));
+    private JsonElement getJson(String urlString, TimeFrame timeFrame, String... symbols) throws IOException {
+        if (symbols.length == 0)
+            throw new IllegalArgumentException("Must specify at least 1 symbol!");
+
+        urlString = urlString.replace(SYMBOL, Util.formatSymbol(symbols[0]));
+        //String.join() not available in API 21
+        urlString = urlString.replace(SYMBOLS, Util.joinStrings(",", symbols));
 
         if (timeFrame != null)
             urlString = urlString.replace(TIME, timeFrame.toString());

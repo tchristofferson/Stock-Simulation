@@ -102,6 +102,8 @@ public class StockActivity extends AppCompatActivity {
                 return;
             } catch (InterruptedException ignored) { return; }
 
+            double openPrice = prices.isEmpty() ? stockInfo.getLatestPrice() : prices.get(0).getPrice();
+
             runOnUiThread(() -> {
                 Util.fillStockChart(stockChart, prices);
                 stockQuantityTextview.setText(String.valueOf(shares));
@@ -110,6 +112,7 @@ public class StockActivity extends AppCompatActivity {
                     stockEquityTextview.setText(String.format("$%s", Util.formatMoney(shares * stockInfo.getLatestPrice())));
                     companyNameTextview.setText(stockInfo.getCompanyName());
                     stockPriceTextview.setText(String.format("$%s", stockInfo.getLatestPrice()));
+                    todayReturnsTextview.setText(String.format("$%s", Util.formatMoney((stockInfo.getLatestPrice() * shares) - (openPrice * shares))));
                     totalReturnsTextview.setText(String.format("$%s", Util.formatMoney(shares * stockInfo.getLatestPrice() - invested)));
                 }
             });

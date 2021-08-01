@@ -9,6 +9,7 @@ import com.github.mikephil.charting.charts.LineChart;
 import com.tchristofferson.stocksimulation.R;
 import com.tchristofferson.stocksimulation.StockSimulationApplication;
 import com.tchristofferson.stocksimulation.Util;
+import com.tchristofferson.stocksimulation.adapters.HistoryAdapter;
 import com.tchristofferson.stocksimulation.core.TimeFrame;
 import com.tchristofferson.stocksimulation.models.Portfolio;
 import com.tchristofferson.stocksimulation.models.PriceTimePair;
@@ -26,10 +27,11 @@ import java.util.concurrent.TimeoutException;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class StockActivity extends AppCompatActivity {
 
-    private TextView symbolTextview;
     private TextView companyNameTextview;
     private TextView stockPriceTextview;
     private LineChart stockChart;
@@ -49,7 +51,7 @@ public class StockActivity extends AppCompatActivity {
         Portfolio portfolio = application.getPortfolio();
 
         //Top text views
-        symbolTextview = findViewById(R.id.activity_stock_symbol_textview);
+        TextView symbolTextview = findViewById(R.id.activity_stock_symbol_textview);
         companyNameTextview = findViewById(R.id.activity_stock_company_name_textview);
         stockPriceTextview = findViewById(R.id.activity_stock_stock_price_textview);
 
@@ -65,6 +67,10 @@ public class StockActivity extends AppCompatActivity {
         symbolTextview.setText(symbol);
         Stock stock = portfolio.getStock(symbol);
         loadStockData(symbol, application, stock);
+
+        RecyclerView historyRecyclerview = findViewById(R.id.history_recyclerview);
+        historyRecyclerview.setLayoutManager(new LinearLayoutManager(this));
+        historyRecyclerview.setAdapter(new HistoryAdapter(stock));
     }
 
     private void loadStockData(String symbol, StockSimulationApplication application, Stock stock) {

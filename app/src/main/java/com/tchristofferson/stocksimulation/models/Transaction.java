@@ -90,7 +90,18 @@ public class Transaction implements Comparable<Transaction> {
     }
 
     public enum Type {
-        BUY,
-        SELL
+        BUY("Buy"),
+        SELL("Sell");
+
+        public final String pretty;
+
+        Type(String pretty) {
+            this.pretty = pretty;
+        }
+
+        @Override
+        public String toString() {
+            return pretty;
+        }
     }
 }

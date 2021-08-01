@@ -26,7 +26,7 @@ public class StockSimulationApplication extends Application {
         watchlist.add("TSLA");
 
         List<Stock> stocks = new ArrayList<>(1);
-        stocks.add(new Stock("AAPL", Arrays.asList(new Transaction("AAPL", Transaction.Type.BUY, System.currentTimeMillis(), 5, 140.00))));
+        stocks.add(new Stock("AAPL", Arrays.asList(new Transaction("AAPL", Transaction.Type.BUY, System.currentTimeMillis(), 5, 146.00))));
 
         portfolio = new Portfolio(5000, stocks, watchlist);
         stockCache = new StockCache(getFilesDir());

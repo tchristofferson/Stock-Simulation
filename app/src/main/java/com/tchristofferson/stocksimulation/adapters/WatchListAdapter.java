@@ -20,7 +20,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.ViewHolder> {
+public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.WatchListViewHolder> {
 
     private static final int POSITIVE_COLOR = Color.rgb(0, 200, 5);
     private static final int NEGATIVE_COLOR = Color.rgb(255, 80, 0);
@@ -35,15 +35,15 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.View
 
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public WatchListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.watch_list_item, parent, false);
 
-        return new ViewHolder(view);
+        return new WatchListViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull WatchListAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull WatchListViewHolder holder, int position) {
         String symbol = watchList.get(position);
         holder.symbolTextview.setText(symbol);
 
@@ -59,7 +59,7 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.View
         return watchList.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    public static class WatchListViewHolder extends RecyclerView.ViewHolder {
 
         private final LinearLayout layout;
         private final LinearLayout performanceLayout;
@@ -68,7 +68,7 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.View
         private final TextView priceTextview;
         private final TextView percentTextview;
 
-        public ViewHolder(@NonNull View itemView) {
+        public WatchListViewHolder(@NonNull View itemView) {
             super(itemView);
             this.layout = itemView.findViewById(R.id.watch_list_item_layout);
             performanceLayout = itemView.findViewById(R.id.watch_list_performance_layout);

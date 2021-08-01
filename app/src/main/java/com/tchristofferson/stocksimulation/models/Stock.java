@@ -29,6 +29,14 @@ public class Stock {
         return symbol;
     }
 
+    public int getTransactionCount() {
+        return transactions.size();
+    }
+
+    public Transaction getTransaction(int index) {
+        return transactions.get(index);
+    }
+
     public List<Transaction> getTransactions() {
         return new ArrayList<>(transactions);
     }

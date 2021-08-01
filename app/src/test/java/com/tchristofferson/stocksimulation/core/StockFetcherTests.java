@@ -1,5 +1,8 @@
-package com.tchristofferson.stocksimulation;
+package com.tchristofferson.stocksimulation.core;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.tchristofferson.stocksimulation.core.StockFetcher;
 import com.tchristofferson.stocksimulation.core.TimeFrame;
 import com.tchristofferson.stocksimulation.models.PriceTimePair;

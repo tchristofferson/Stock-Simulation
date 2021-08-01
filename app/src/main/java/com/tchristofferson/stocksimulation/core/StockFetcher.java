@@ -1,5 +1,7 @@
 package com.tchristofferson.stocksimulation.core;
 
+import android.util.Log;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -65,10 +67,19 @@ public class StockFetcher {
             double price = obj.get("close").getAsDouble();
             pairs.add(new PriceTimePair(label, price));
         } else {
+            Log.d("StockSimulation", "array size: " + jsonArray.size());
+
             for (JsonElement element : jsonArray) {
                 JsonObject obj = element.getAsJsonObject();
-                String label = obj.get("label").getAsString();
-                double price = obj.get("close").getAsDouble();
+
+                JsonElement labelElement = obj.get("label");
+                JsonElement priceElement = obj.get("close");
+                
+                if (priceElement.isJsonNull())
+                    continue;
+
+                String label = labelElement.getAsString();
+                double price = priceElement.getAsDouble();
 
                 pairs.add(new PriceTimePair(label, price));
             }
@@ -77,7 +88,7 @@ public class StockFetcher {
         return pairs;
     }
 
-    private JsonElement getJson(String urlString, TimeFrame timeFrame, String... symbols) throws IOException {
+    JsonElement getJson(String urlString, TimeFrame timeFrame, String... symbols) throws IOException {
         if (symbols.length == 0)
             throw new IllegalArgumentException("Must specify at least 1 symbol!");
 

@@ -1,6 +1,7 @@
 package com.tchristofferson.stocksimulation.activities;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,13 +21,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class StockActivity extends AppCompatActivity {
 
-    private final ExecutorService executorService = Executors.newFixedThreadPool(2);
     private TextView symbolTextview;
     private TextView companyNameTextview;
     private TextView stockPriceTextview;
@@ -68,30 +70,18 @@ public class StockActivity extends AppCompatActivity {
     private void loadStockData(String symbol, StockSimulationApplication application, Stock stock) {
         int shares = stock == null ? 0 : stock.getShares();
         double invested = stock == null ? 0 : stock.getInvested();
-        Future<StockInfo> futureStockInfo = executorService.submit(() -> {
-            List<StockInfo> stockInfoList;
 
-            try {
-                stockInfoList = application.getStockCache().getStockInfo(symbol);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-
-            if (stockInfoList.isEmpty())
-                return null;
-
-            return stockInfoList.get(0);
-        });
-
-        executorService.submit(() -> {
+        new Thread(() -> {
+            Log.d("StockSimulation", "Starting scheduled task!");
             List<PriceTimePair> prices;
             StockInfo stockInfo;
 
             try {
+                Log.d("StockSimulation", "fetching history!");
                 prices = application.getStockCache().getHistoricalData(symbol, TimeFrame.ONE_DAY);
-                stockInfo = futureStockInfo.get();
-            } catch (IOException | ExecutionException e) {
+                Log.d("StockSimulation", "history fetched");
+                stockInfo = application.getStockCache().getStockInfo(symbol).get(0);
+            } catch (IOException e) {
                 e.printStackTrace();
 
                 Toast toast = new Toast(StockActivity.this);
@@ -100,7 +90,7 @@ public class StockActivity extends AppCompatActivity {
                 toast.show();
                 runOnUiThread(StockActivity.this::finish);
                 return;
-            } catch (InterruptedException ignored) { return; }
+            }
 
             double openPrice = prices.isEmpty() ? stockInfo.getLatestPrice() : prices.get(0).getPrice();
 
@@ -116,12 +106,11 @@ public class StockActivity extends AppCompatActivity {
                     totalReturnsTextview.setText(String.format("$%s", Util.formatMoney(shares * stockInfo.getLatestPrice() - invested)));
                 }
             });
-        });
+        }).start();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        executorService.shutdownNow();
     }
 }

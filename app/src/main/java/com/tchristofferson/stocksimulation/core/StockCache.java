@@ -48,7 +48,12 @@ public class StockCache {
             return cachedStockInfo;
 
         List<StockInfo> stockInfoList = new ArrayList<>(cachedStockInfo);
-        stockInfoList.addAll(fetcher.fetchStockInfo(notCached.toArray(new String[0])));
+        List<StockInfo> fetched = fetcher.fetchStockInfo(notCached.toArray(new String[0]));
+
+        for (StockInfo stockInfo : fetched) {
+            stockInfoList.add(stockInfo);
+            stockInfoCache.put(stockInfo.getSymbol(), stockInfo);
+        }
 
         return stockInfoList;
     }

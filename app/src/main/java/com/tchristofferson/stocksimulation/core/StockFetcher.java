@@ -48,7 +48,8 @@ public class StockFetcher {
             JsonObject quote = obj.getAsJsonObject(symbol).getAsJsonObject("quote");
             String companyName = quote.get("companyName").getAsString();
             double price = quote.get("latestPrice").getAsDouble();
-            stockInfoList.add(new StockInfo(symbol, companyName, price));
+            double changePercent = quote.get("changePercent").getAsDouble();
+            stockInfoList.add(new StockInfo(symbol, companyName, price, changePercent));
         }
 
         return stockInfoList;

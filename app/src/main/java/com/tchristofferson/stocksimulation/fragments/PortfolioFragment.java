@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+//This is the initial fragment displayed by MainActivity when the app starts
 public class PortfolioFragment extends StockChartFragment {
 
     private TextView investingTextView;
@@ -40,9 +41,6 @@ public class PortfolioFragment extends StockChartFragment {
         watchList.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new WatchListAdapter(requireActivity());
         watchList.setAdapter(adapter);
-
-        Log.d("StockSimulation", "adapterSize: " + adapter.getItemCount());
-        Log.d("StockSimulation", "actualSize: " + ((StockSimulationApplication) requireActivity().getApplication()).getPortfolio().getWatchList().size());
 
         List<PriceTimePair> prices = new ArrayList<>(5);
         prices.add(new PriceTimePair("7/10", 10D));

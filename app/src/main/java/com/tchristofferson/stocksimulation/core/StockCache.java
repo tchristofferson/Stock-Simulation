@@ -10,24 +10,23 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class StockCache {
 
     private final StockFetcher fetcher;
-    private final File filesDir;
     private final Cache<String, StockInfo> stockInfoCache;
+    private final Cache<String, List<PriceTimePair>> historyCache;
 
-    public StockCache(File filesDir) {
+    public StockCache() {
         this.fetcher = new StockFetcher();
-        this.filesDir = filesDir;
         this.stockInfoCache = CacheBuilder.newBuilder()
-                        .expireAfterWrite(30, TimeUnit.SECONDS)
-                        .build();
+                .expireAfterWrite(30, TimeUnit.SECONDS)
+                .build();
+        this.historyCache = CacheBuilder.newBuilder()
+                .expireAfterWrite(1, TimeUnit.MINUTES)
+                .maximumSize(5)//Set max because the list can contain lots of price time pairs
+                .build();
     }
 
     public List<StockInfo> getStockInfo(String... symbols) throws IOException {
@@ -35,7 +34,11 @@ public class StockCache {
         List<StockInfo> cachedStockInfo = new ArrayList<>(symbols.length);
 
         for (String symbol : symbols) {
-            StockInfo stockInfo = stockInfoCache.getIfPresent(Util.formatSymbol(symbol));
+            StockInfo stockInfo;
+
+            synchronized (stockInfoCache) {
+                stockInfo = stockInfoCache.getIfPresent(Util.formatSymbol(symbol));
+            }
 
             if (stockInfo != null) {
                 cachedStockInfo.add(stockInfo);
@@ -52,32 +55,31 @@ public class StockCache {
 
         for (StockInfo stockInfo : fetched) {
             stockInfoList.add(stockInfo);
-            stockInfoCache.put(stockInfo.getSymbol(), stockInfo);
+
+            synchronized (stockInfoCache) {
+                stockInfoCache.put(stockInfo.getSymbol(), stockInfo);
+            }
         }
 
         return stockInfoList;
     }
 
     public List<PriceTimePair> getHistoricalData(String symbol, TimeFrame timeFrame) throws IOException {
-        List<PriceTimePair> prices;
-        File file = new File(filesDir, Util.formatSymbol(symbol) + ".json");
+        symbol = Util.formatSymbol(symbol);
+        List<PriceTimePair> historyList;
 
-        if (!file.exists()) {
-            //Fetch using StockFetcher and save to file
-            prices = fetcher.fetchPriceHistory(symbol, timeFrame);
-            writeStockHistory(symbol, prices);
-            return prices;
+        synchronized (historyCache) {
+            historyList = historyCache.getIfPresent(symbol);
         }
 
-        return readStockHistory(symbol);
-    }
+        if (historyList == null) {
+            historyList = fetcher.fetchPriceHistory(symbol, timeFrame);
 
-    private void writeStockHistory(String symbol, List<PriceTimePair> prices) {
-        //TODO: Implement writeStockHistory
-    }
+            synchronized (historyCache) {
+                historyCache.put(symbol, historyList);
+            }
+        }
 
-    private List<PriceTimePair> readStockHistory(String symbol) {
-        //TODO: Implement readStockHistory
-        return null;
+        return historyList;
     }
 }

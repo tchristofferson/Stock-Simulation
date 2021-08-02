@@ -9,28 +9,40 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tchristofferson.stocksimulation.R;
 import com.tchristofferson.stocksimulation.StockSimulationApplication;
 import com.tchristofferson.stocksimulation.Util;
 import com.tchristofferson.stocksimulation.activities.StockActivity;
+import com.tchristofferson.stocksimulation.core.StockCache;
+import com.tchristofferson.stocksimulation.models.StockInfo;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.WatchListViewHolder> {
 
-    private static final int POSITIVE_COLOR = Color.rgb(0, 200, 5);
-    private static final int NEGATIVE_COLOR = Color.rgb(255, 80, 0);
+    private static final int POSITIVE_COLOR = Color.rgb(0, 200, 5);//green
+    private static final int NEUTRAL_COLOR = Color.rgb(128, 128, 128);//gray
+    private static final int NEGATIVE_COLOR = Color.rgb(255, 80, 0);//red
 
     private final Context context;
+    private final ExecutorService executorService;
+    private final StockCache stockCache;
     private final List<String> watchList;
 
     public WatchListAdapter(Activity activity) {
         this.context = activity;
-        watchList = ((StockSimulationApplication) activity.getApplication()).getPortfolio().getWatchList();
+        executorService = Executors.newCachedThreadPool();
+        StockSimulationApplication application = (StockSimulationApplication) activity.getApplication();
+        stockCache = application.getStockCache();
+        watchList = application.getPortfolio().getWatchList();
     }
 
     @NonNull
@@ -46,6 +58,36 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.Watc
     public void onBindViewHolder(@NonNull WatchListViewHolder holder, int position) {
         String symbol = watchList.get(position);
         holder.symbolTextview.setText(symbol);
+
+        executorService.submit(() -> {
+            StockInfo stockInfo;
+
+            try {
+                stockInfo = stockCache.getStockInfo(symbol).get(0);
+            } catch (IOException e) {
+                e.printStackTrace();
+
+                Toast toast = new Toast(context);
+                toast.setDuration(Toast.LENGTH_LONG);
+                toast.setText("Failed to fetch stock info!");
+                ((Activity) context).runOnUiThread(toast::show);
+                return;
+            }
+
+            ((Activity) context).runOnUiThread(() -> {
+                holder.companyTextview.setText(stockInfo.getCompanyName());
+                holder.priceTextview.setText(String.format("$%s", stockInfo.getLatestPrice()));
+                double percentChange = Util.formatMoney(stockInfo.getChangePercent() * 100);
+                holder.percentTextview.setText(String.format("%s%%", percentChange));
+
+                if (percentChange < 0)
+                    holder.performanceLayout.setBackgroundColor(NEGATIVE_COLOR);
+                else if (percentChange > 0)
+                    holder.performanceLayout.setBackgroundColor(POSITIVE_COLOR);
+                else
+                    holder.performanceLayout.setBackgroundColor(NEUTRAL_COLOR);
+            });
+        });
 
         holder.layout.setOnClickListener(v -> {
             Intent intent = new Intent(context, StockActivity.class);

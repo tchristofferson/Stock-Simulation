@@ -29,7 +29,7 @@ public class StockSimulationApplication extends Application {
         stocks.add(new Stock("AAPL", Arrays.asList(new Transaction("AAPL", Transaction.Type.BUY, System.currentTimeMillis(), 5, 146.00))));
 
         portfolio = new Portfolio(5000, stocks, watchlist);
-        stockCache = new StockCache(getFilesDir());
+        stockCache = new StockCache();
 
         //TODO: Load stocks and watchlist
     }

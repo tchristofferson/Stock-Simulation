@@ -1,7 +1,9 @@
 package com.tchristofferson.stocksimulation.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,13 +19,8 @@ import com.tchristofferson.stocksimulation.models.Stock;
 import com.tchristofferson.stocksimulation.models.StockInfo;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,6 +36,7 @@ public class StockActivity extends AppCompatActivity {
     private TextView stockEquityTextview;
     private TextView todayReturnsTextview;
     private TextView totalReturnsTextview;
+    private boolean dataLoaded = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,10 +62,31 @@ public class StockActivity extends AppCompatActivity {
         todayReturnsTextview = findViewById(R.id.today_returns_textview);
         totalReturnsTextview = findViewById(R.id.total_returns_textview);
 
+        Button tradeButton = findViewById(R.id.trade_btn);
+        tradeButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, TradeActivity.class);
+            intent.putExtra(getString(R.string.symbol_key), symbol);
+
+            if (dataLoaded) {
+                intent.putExtra(getString(R.string.price_key), Double.parseDouble(stockPriceTextview.getText().toString().substring(1)));
+            } else {
+                Toast toast = new Toast(this);
+                toast.setDuration(Toast.LENGTH_LONG);
+                toast.setText("Wait for data to load!");
+                toast.show();
+                return;
+            }
+
+            startActivity(intent);
+        });
+
         symbolTextview.setText(symbol);
         Stock stock = portfolio.getStock(symbol);
-        loadStockData(symbol, application, stock);
 
+        if (stock == null)
+            stock = new Stock(symbol, Collections.emptyList());
+
+        loadStockData(symbol, application, stock);
         RecyclerView historyRecyclerview = findViewById(R.id.history_recyclerview);
         historyRecyclerview.setLayoutManager(new LinearLayoutManager(this));
         historyRecyclerview.setAdapter(new HistoryAdapter(stock));
@@ -110,6 +129,7 @@ public class StockActivity extends AppCompatActivity {
                     stockPriceTextview.setText(String.format("$%s", stockInfo.getLatestPrice()));
                     todayReturnsTextview.setText(String.format("$%s", Util.formatMoney((stockInfo.getLatestPrice() * shares) - (openPrice * shares))));
                     totalReturnsTextview.setText(String.format("$%s", Util.formatMoney(shares * stockInfo.getLatestPrice() - invested)));
+                    dataLoaded = true;
                 }
             });
         }).start();

@@ -20,6 +20,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.StockActivity" />
+        <activity android:name=".activities.TradeActivity" />
     </application>
 
 </manifest>

@@ -3,7 +3,9 @@ package com.tchristofferson.stocksimulation.core;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.tchristofferson.stocksimulation.Util;
+import com.tchristofferson.stocksimulation.models.Portfolio;
 import com.tchristofferson.stocksimulation.models.PriceTimePair;
+import com.tchristofferson.stocksimulation.models.Stock;
 import com.tchristofferson.stocksimulation.models.StockInfo;
 
 import java.io.File;
@@ -83,5 +85,10 @@ public class StockCache {
         }
 
         return historyList;
+    }
+
+    public List<PriceTimePair> getPortfolioValueHistory(Portfolio portfolio, TimeFrame timeFrame) {
+        //TODO: Implement getPortfolioValueHistory
+        return null;
     }
 }

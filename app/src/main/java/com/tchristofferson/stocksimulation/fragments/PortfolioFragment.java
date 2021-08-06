@@ -1,8 +1,6 @@
 package com.tchristofferson.stocksimulation.fragments;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,9 +16,7 @@ import com.tchristofferson.stocksimulation.models.StockInfo;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -32,7 +28,6 @@ public class PortfolioFragment extends StockChartFragment {
 
     private TextView investingTextView;
     private WatchListAdapter adapter;
-    private RecyclerView watchList;
 
     public PortfolioFragment() {
         super(R.layout.fragment_portfolio);
@@ -43,7 +38,7 @@ public class PortfolioFragment extends StockChartFragment {
         super.onViewCreated(view, savedInstanceState);
 
         investingTextView = getView().findViewById(R.id.investing_amount_textview);
-        watchList = getView().findViewById(R.id.watch_list_recylerview);
+        RecyclerView watchList = getView().findViewById(R.id.watch_list_recylerview);
         watchList.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new WatchListAdapter(requireActivity());
         watchList.setAdapter(adapter);

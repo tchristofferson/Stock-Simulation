@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tchristofferson.stocksimulation.Util;
 import com.tchristofferson.stocksimulation.models.PriceTimePair;
+import com.tchristofferson.stocksimulation.models.Stock;
 import com.tchristofferson.stocksimulation.models.StockInfo;
 
 import java.io.BufferedReader;
@@ -87,6 +88,11 @@ public class StockFetcher {
         }
 
         return pairs;
+    }
+
+    public List<PriceTimePair> fetchPortfolioValueHistory(List<Stock> stocks, TimeFrame timeFrame) {
+        //TODO: Implement StockFetcher#fetchPortfolioValueHistory
+        return null;
     }
 
     JsonElement getJson(String urlString, TimeFrame timeFrame, String... symbols) throws IOException {

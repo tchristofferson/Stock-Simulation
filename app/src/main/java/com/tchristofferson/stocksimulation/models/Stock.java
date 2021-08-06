@@ -13,7 +13,7 @@ public class Stock {
 
     public Stock(String symbol, List<Transaction> transactions) {
         this.symbol = symbol;
-        this.transactions = transactions;
+        this.transactions = new ArrayList<>(transactions);
 
         for (Transaction transaction : transactions) {
             if (transaction.getType() == Transaction.Type.BUY) {

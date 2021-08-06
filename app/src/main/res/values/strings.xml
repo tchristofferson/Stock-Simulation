@@ -14,4 +14,7 @@
     <string name="settings">Settings</string>
     <string name="symbol_key">symbol_key</string>
     <string name="price_key">price_key</string>
+    <string name="failed_fetch">Failed to fetch stock data!</string>
+    <string name="shares_below_0"><![CDATA[Shares must be > 0!]]></string>
+    <string name="wait_for_data">Wait for data to load!</string>
 </resources>

@@ -70,9 +70,7 @@ public class StockActivity extends AppCompatActivity {
             if (dataLoaded) {
                 intent.putExtra(getString(R.string.price_key), Double.parseDouble(stockPriceTextview.getText().toString().substring(1)));
             } else {
-                Toast toast = new Toast(this);
-                toast.setDuration(Toast.LENGTH_LONG);
-                toast.setText("Wait for data to load!");
+                Toast toast = Toast.makeText(this, R.string.wait_for_data, Toast.LENGTH_LONG);
                 toast.show();
                 return;
             }
@@ -97,21 +95,16 @@ public class StockActivity extends AppCompatActivity {
         double invested = stock == null ? 0 : stock.getInvested();
 
         new Thread(() -> {
-            Log.d("StockSimulation", "Starting scheduled task!");
             List<PriceTimePair> prices;
             StockInfo stockInfo;
 
             try {
-                Log.d("StockSimulation", "fetching history!");
                 prices = application.getStockCache().getHistoricalData(symbol, TimeFrame.ONE_DAY);
-                Log.d("StockSimulation", "history fetched");
-                stockInfo = application.getStockCache().getStockInfo(symbol).get(0);
+                stockInfo = application.getStockCache().getStockInfo(false, symbol).get(0);
             } catch (IOException e) {
                 e.printStackTrace();
 
-                Toast toast = new Toast(StockActivity.this);
-                toast.setText("Failed to retrieve stock info!");
-                toast.setDuration(Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(this, R.string.failed_fetch, Toast.LENGTH_LONG);
                 toast.show();
                 runOnUiThread(StockActivity.this::finish);
                 return;

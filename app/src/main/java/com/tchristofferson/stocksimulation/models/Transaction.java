@@ -35,7 +35,7 @@ public class Transaction implements Comparable<Transaction> {
         this.type = type;
         this.timeOfPurchase = timeOfPurchase;
         this.shares = shares;
-        this.pricePerShare = pricePerShare;
+        this.pricePerShare = Util.formatMoney(pricePerShare);
 
         if (type == Type.SELL)
             this.soldShares = shares;

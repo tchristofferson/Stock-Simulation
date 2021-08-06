@@ -1,5 +1,10 @@
 package com.tchristofferson.stocksimulation.models;
 
+import com.google.common.base.Preconditions;
+import com.tchristofferson.stocksimulation.Util;
+
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Portfolio {
@@ -10,8 +15,8 @@ public class Portfolio {
 
     public Portfolio(double money, List<Stock> stocks, List<String> watchList) {
         this.money = money;
-        this.stocks = stocks;
-        this.watchList = watchList;
+        this.stocks = new ArrayList<>(stocks);
+        this.watchList = new ArrayList<>(watchList);
     }
 
     public double getMoney() {
@@ -33,6 +38,32 @@ public class Portfolio {
         }
 
         return null;
+    }
+
+    //Will add shares and subtract cost from this.money
+    public void addShares(String symbol, int shares, double cost) {
+        Preconditions.checkState(this.money >= cost, "Invalid funds!");
+        Stock stock = getStock(symbol);
+
+        if (stock == null) {
+            stock = new Stock(symbol, Collections.emptyList());
+            stocks.add(stock);
+        }
+
+        Transaction transaction = new Transaction(symbol, Transaction.Type.BUY, System.currentTimeMillis(), shares, cost / shares);
+        stock.addTransaction(transaction);
+        this.money = Util.formatMoney(this.money - cost);
+    }
+
+    //Will take shares and add value to this.money
+    public void removeShares(String symbol, int shares, double value) {
+        Stock stock = getStock(symbol);
+        Preconditions.checkArgument(stock != null, "Stock " + symbol + " isn't owned!");
+        Preconditions.checkState(stock.getShares() >= shares, "shares must be <= owned shares!");
+
+        Transaction transaction = new Transaction(symbol, Transaction.Type.SELL, System.currentTimeMillis(), shares, value / shares);
+        stock.addTransaction(transaction);
+        this.money = Util.formatMoney(this.money + value);
     }
 
     public List<String> getWatchList() {

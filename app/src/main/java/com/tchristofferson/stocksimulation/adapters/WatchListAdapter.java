@@ -63,13 +63,11 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.Watc
             StockInfo stockInfo;
 
             try {
-                stockInfo = stockCache.getStockInfo(symbol).get(0);
+                stockInfo = stockCache.getStockInfo(false, symbol).get(0);
             } catch (IOException e) {
                 e.printStackTrace();
 
-                Toast toast = new Toast(context);
-                toast.setDuration(Toast.LENGTH_LONG);
-                toast.setText("Failed to fetch stock info!");
+                Toast toast = Toast.makeText(context, R.string.failed_fetch, Toast.LENGTH_LONG);
                 ((Activity) context).runOnUiThread(toast::show);
                 return;
             }

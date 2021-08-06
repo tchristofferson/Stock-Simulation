@@ -29,15 +29,17 @@ public class StockCache {
                 .build();
     }
 
-    public List<StockInfo> getStockInfo(String... symbols) throws IOException {
+    public List<StockInfo> getStockInfo(boolean requireLive, String... symbols) throws IOException {
         List<String> notCached = new ArrayList<>(symbols.length);
         List<StockInfo> cachedStockInfo = new ArrayList<>(symbols.length);
 
         for (String symbol : symbols) {
-            StockInfo stockInfo;
+            StockInfo stockInfo = null;
 
-            synchronized (stockInfoCache) {
-                stockInfo = stockInfoCache.getIfPresent(Util.formatSymbol(symbol));
+            if (!requireLive) {
+                synchronized (stockInfoCache) {
+                    stockInfo = stockInfoCache.getIfPresent(Util.formatSymbol(symbol));
+                }
             }
 
             if (stockInfo != null) {

@@ -7,11 +7,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tchristofferson.stocksimulation.R;
 import com.tchristofferson.stocksimulation.StockSimulationApplication;
 import com.tchristofferson.stocksimulation.Util;
+import com.tchristofferson.stocksimulation.core.StockCache;
 import com.tchristofferson.stocksimulation.models.Portfolio;
+import com.tchristofferson.stocksimulation.models.StockInfo;
+
+import java.io.IOException;
+import java.util.Locale;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -62,8 +68,51 @@ public class TradeActivity extends AppCompatActivity {
             }
         });
 
+        StockCache cache = application.getStockCache();
+
         submitButton.setOnClickListener(v -> {
-            //TODO: Setup submit button click listener
+            new Thread(() -> {
+                StockInfo stockInfo;
+
+                try {
+                    stockInfo = cache.getStockInfo(true, symbol).get(0);
+                } catch (IOException | IndexOutOfBoundsException e) {
+                    e.printStackTrace();
+
+                    Toast toast = Toast.makeText(this, R.string.failed_fetch, Toast.LENGTH_LONG);
+                    runOnUiThread(() -> {
+                        toast.show();
+                        finish();
+                    });
+                    return;
+                }
+
+                runOnUiThread(() -> {
+                    String sharesString = sharesEditText.getText().toString();
+                    int shares;
+
+                    if (sharesString.isEmpty() || (shares = Integer.parseInt(sharesString)) == 0) {
+                        Toast toast = Toast.makeText(this, R.string.shares_below_0, Toast.LENGTH_SHORT);
+                        toast.show();
+                        return;
+                    }
+
+                    double value = Util.formatMoney(stockInfo.getLatestPrice() * shares);
+
+                    if (buyRadioBtn.isChecked()) {
+                        portfolio.addShares(symbol, shares, value);
+                    } else {
+                        portfolio.removeShares(symbol, shares, value);
+                    }
+
+                    Toast toast = Toast.makeText(this,
+                            String.format(Locale.getDefault(),
+                                    "Successfully bought %d shares of %s for $%s!", shares, symbol,
+                                    Util.formatMoney(value)), Toast.LENGTH_LONG);
+                    toast.show();
+                    finish();
+                });
+            }).start();
         });
     }
 }

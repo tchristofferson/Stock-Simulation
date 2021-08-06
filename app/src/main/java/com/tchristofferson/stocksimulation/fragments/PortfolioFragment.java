@@ -1,16 +1,22 @@
 package com.tchristofferson.stocksimulation.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tchristofferson.stocksimulation.R;
 import com.tchristofferson.stocksimulation.StockSimulationApplication;
 import com.tchristofferson.stocksimulation.Util;
 import com.tchristofferson.stocksimulation.adapters.WatchListAdapter;
+import com.tchristofferson.stocksimulation.models.Portfolio;
 import com.tchristofferson.stocksimulation.models.PriceTimePair;
+import com.tchristofferson.stocksimulation.models.Stock;
+import com.tchristofferson.stocksimulation.models.StockInfo;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,5 +56,49 @@ public class PortfolioFragment extends StockChartFragment {
         prices.add(new PriceTimePair("7/14", 15.3D));
 
         Util.fillStockChart(stockChart, prices);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.notifyDataSetChanged();
+        StockSimulationApplication application = (StockSimulationApplication) requireActivity().getApplication();
+        Portfolio portfolio = application.getPortfolio();
+        List<Stock> stocks = portfolio.getStocks();
+
+        new Thread(() -> {
+            String[] ownedSymbols = new String[stocks.size()];
+
+            for (int i = 0; i < stocks.size(); i++) {
+                Stock stock = stocks.get(i);
+                ownedSymbols[i] = stock.getSymbol();
+            }
+
+            List<StockInfo> stockInfo;
+
+            try {
+                stockInfo = application.getStockCache().getStockInfo(false, ownedSymbols);
+            } catch (IOException e) {
+                e.printStackTrace();
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(getContext(), R.string.failed_fetch, Toast.LENGTH_LONG).show());
+                return;
+            }
+
+            requireActivity().runOnUiThread(() -> {
+                double value = 0;
+
+                for (StockInfo info : stockInfo) {
+                    Stock stock = portfolio.getStock(info.getSymbol());
+
+                    if (stock == null)
+                        continue;
+
+                    value += info.getLatestPrice() * stock.getShares();
+                }
+
+                investingTextView.setText(String.format("$%s", Util.formatMoney(value)));
+            });
+        }).start();
     }
 }

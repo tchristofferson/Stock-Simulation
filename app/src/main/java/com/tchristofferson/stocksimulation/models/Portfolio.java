@@ -19,6 +19,16 @@ public class Portfolio {
         this.watchList = new ArrayList<>(watchList);
     }
 
+    public double getInvested() {
+        double invested = 0;
+
+        for (Stock stock : stocks) {
+            invested += stock.getInvested();
+        }
+
+        return Util.formatMoney(invested);
+    }
+
     public double getMoney() {
         return money;
     }
@@ -28,7 +38,7 @@ public class Portfolio {
     }
 
     public List<Stock> getStocks() {
-        return stocks;
+        return new ArrayList<>(stocks);
     }
 
     public Stock getStock(String symbol) {

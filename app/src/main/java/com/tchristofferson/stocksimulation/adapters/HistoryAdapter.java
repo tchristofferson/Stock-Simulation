@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryViewHolder> {
 
-    private final Stock stock;
+    private Stock stock;
 
     public HistoryAdapter(Stock stock) {
         this.stock = stock;
@@ -35,7 +35,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
 
     @Override
     public void onBindViewHolder(@NonNull HistoryViewHolder holder, int position) {
-        Transaction transaction = stock.getTransaction(position);
+        //                                                   displays most recent transaction first
+        Transaction transaction = stock.getTransaction(stock.getTransactionCount() - 1 - position);
         holder.transactionTypeTextview.setText(transaction.getType().toString());
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(transaction.getTimeOfPurchase());
@@ -48,6 +49,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.HistoryV
     @Override
     public int getItemCount() {
         return stock.getTransactionCount();
+    }
+
+    public void setStock(Stock stock) {
+        this.stock = stock;
     }
 
     public static class HistoryViewHolder extends RecyclerView.ViewHolder {

@@ -33,6 +33,13 @@ public class Stock {
         return transactions.size();
     }
 
+    public Transaction getLatestTransaction() {
+        if (transactions.isEmpty())
+            return null;
+
+        return transactions.get(transactions.size() - 1);
+    }
+
     public Transaction getTransaction(int index) {
         return transactions.get(index);
     }

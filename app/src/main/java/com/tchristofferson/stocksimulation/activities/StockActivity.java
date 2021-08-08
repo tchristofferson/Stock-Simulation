@@ -2,7 +2,6 @@ package com.tchristofferson.stocksimulation.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,8 +18,10 @@ import com.tchristofferson.stocksimulation.models.Stock;
 import com.tchristofferson.stocksimulation.models.StockInfo;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.TimeZone;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,6 +38,8 @@ public class StockActivity extends AppCompatActivity {
     private TextView todayReturnsTextview;
     private TextView totalReturnsTextview;
     private boolean dataLoaded = false;
+    private HistoryAdapter adapter;
+    String symbol;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -44,7 +47,7 @@ public class StockActivity extends AppCompatActivity {
         setContentView(R.layout.activity_stock);
 
         Bundle bundle = getIntent().getExtras();
-        String symbol = bundle.getString(getString(R.string.symbol_key));
+        symbol = bundle.getString(getString(R.string.symbol_key));
         StockSimulationApplication application = (StockSimulationApplication) getApplication();
         Portfolio portfolio = application.getPortfolio();
 
@@ -87,7 +90,8 @@ public class StockActivity extends AppCompatActivity {
         loadStockData(symbol, application, stock);
         RecyclerView historyRecyclerview = findViewById(R.id.history_recyclerview);
         historyRecyclerview.setLayoutManager(new LinearLayoutManager(this));
-        historyRecyclerview.setAdapter(new HistoryAdapter(stock));
+        adapter = new HistoryAdapter(stock);
+        historyRecyclerview.setAdapter(adapter);
     }
 
     private void loadStockData(String symbol, StockSimulationApplication application, Stock stock) {
@@ -120,7 +124,18 @@ public class StockActivity extends AppCompatActivity {
                     stockEquityTextview.setText(String.format("$%s", Util.formatMoney(shares * stockInfo.getLatestPrice())));
                     companyNameTextview.setText(stockInfo.getCompanyName());
                     stockPriceTextview.setText(String.format("$%s", stockInfo.getLatestPrice()));
-                    todayReturnsTextview.setText(String.format("$%s", Util.formatMoney((stockInfo.getLatestPrice() * shares) - (openPrice * shares))));
+
+                    double todayReturns = (stockInfo.getLatestPrice() * shares) - (openPrice * shares);
+
+                    if (stock != null && stock.getTransactionCount() > 0) {
+                        Calendar timeOfPurchaseCalendar = Calendar.getInstance(TimeZone.getDefault());
+                        timeOfPurchaseCalendar.setTimeInMillis(stock.getTransaction(stock.getTransactionCount() - 1).getTimeOfPurchase());
+
+                        if (isCalendarToday(timeOfPurchaseCalendar))
+                            todayReturns = (stockInfo.getLatestPrice() * shares) - (stock.getLatestTransaction().getPricePerShare() * shares);
+                    }
+
+                    todayReturnsTextview.setText(String.format("$%s", Util.formatMoney(todayReturns)));
                     totalReturnsTextview.setText(String.format("$%s", Util.formatMoney(shares * stockInfo.getLatestPrice() - invested)));
                     dataLoaded = true;
                 }
@@ -129,7 +144,22 @@ public class StockActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onResume() {
+        super.onResume();
+        Portfolio portfolio = ((StockSimulationApplication) getApplication()).getPortfolio();
+        Stock stock = portfolio.getStock(symbol);
+
+        if (stock != null)
+            adapter.setStock(stock);
+
+        adapter.notifyDataSetChanged();
+        loadStockData(symbol, (StockSimulationApplication) getApplication(), stock);
+    }
+
+    private boolean isCalendarToday(Calendar calendar) {
+        Calendar today = Calendar.getInstance();
+
+        return today.get(Calendar.YEAR) == calendar.get(Calendar.YEAR)
+                && today.get(Calendar.DAY_OF_YEAR) == calendar.get(Calendar.DAY_OF_YEAR);
     }
 }

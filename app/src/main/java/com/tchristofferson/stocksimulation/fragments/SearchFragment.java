@@ -39,7 +39,7 @@ public class SearchFragment extends Fragment {
         ImageButton searchButton = requireView().findViewById(R.id.search_btn);
         RecyclerView recyclerView = requireView().findViewById(R.id.search_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new SearchAdapter(portfolio);
+        adapter = new SearchAdapter(requireContext(), portfolio);
         recyclerView.setAdapter(adapter);
 
         searchButton.setOnClickListener(v -> new Thread(() -> {
@@ -49,13 +49,11 @@ public class SearchFragment extends Fragment {
                 searchResults = application.getStockCache().getStockInfo(false, searchEditText.getText().toString().replace(" ", ""));
             } catch (IOException e) {
                 e.printStackTrace();
-                requireActivity().runOnUiThread(() -> Toast.makeText(requireContext(), R.string.failed_fetch, Toast.LENGTH_LONG).show());
+                requireActivity().runOnUiThread(() -> Toast.makeText(requireContext(), R.string.search_failed_fetch, Toast.LENGTH_LONG).show());
                 return;
             }
 
             requireActivity().runOnUiThread(() -> adapter.populateSearchResults(searchResults));
         }).start());
-
-
     }
 }

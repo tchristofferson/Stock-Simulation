@@ -6,6 +6,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.tchristofferson.stocksimulation.R;
 import com.tchristofferson.stocksimulation.fragments.PortfolioFragment;
 import com.tchristofferson.stocksimulation.fragments.SearchFragment;
+import com.tchristofferson.stocksimulation.fragments.SettingsFragment;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -19,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
 
         Fragment portfolio = new PortfolioFragment();
         Fragment search = new SearchFragment();
-        Fragment settings = new Fragment(R.layout.fragment_settings);
+        Fragment settings = new SettingsFragment();
 
         setCurrentFragment(portfolio);
 

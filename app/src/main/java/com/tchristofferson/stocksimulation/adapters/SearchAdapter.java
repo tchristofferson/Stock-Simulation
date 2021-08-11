@@ -1,5 +1,7 @@
 package com.tchristofferson.stocksimulation.adapters;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -7,6 +9,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.tchristofferson.stocksimulation.R;
+import com.tchristofferson.stocksimulation.activities.StockActivity;
 import com.tchristofferson.stocksimulation.models.Portfolio;
 import com.tchristofferson.stocksimulation.models.StockInfo;
 
@@ -14,15 +17,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchViewHolder> {
 
+    private final Context context;
     private final List<StockInfo> searchResults;
     private final Portfolio portfolio;
 
-    public SearchAdapter(Portfolio portfolio) {
-        searchResults = new ArrayList<>(1);
+    public SearchAdapter(Context context, Portfolio portfolio) {
+        this.context = context;
+        this.searchResults = new ArrayList<>(1);
         this.portfolio = portfolio;
     }
 
@@ -42,6 +48,12 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
         holder.symbolTextview.setText(stockInfo.getSymbol());
         holder.watchListCheckbox.setChecked(portfolio.getWatchList().contains(stockInfo.getSymbol()));
         holder.watchListCheckbox.setText("");
+
+        holder.container.setOnClickListener(v -> {
+            Intent intent = new Intent(context, StockActivity.class);
+            intent.putExtra(context.getString(R.string.symbol_key), stockInfo.getSymbol());
+            context.startActivity(intent);
+        });
     }
 
     @Override
@@ -57,12 +69,14 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
     public class SearchViewHolder extends RecyclerView.ViewHolder {
 
+        private final ConstraintLayout container;
         private final TextView companyTextview;
         private final TextView symbolTextview;
         private final CheckBox watchListCheckbox;
 
         public SearchViewHolder(@NonNull View itemView) {
             super(itemView);
+            this.container = itemView.findViewById(R.id.search_list_item_container);
             companyTextview = itemView.findViewById(R.id.search_company_name_textview);
             symbolTextview = itemView.findViewById(R.id.search_stock_symbol_textview);
             watchListCheckbox = itemView.findViewById(R.id.watch_list_checkbox);

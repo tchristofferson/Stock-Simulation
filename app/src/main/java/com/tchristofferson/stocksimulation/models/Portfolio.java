@@ -37,6 +37,14 @@ public class Portfolio {
         this.money = money;
     }
 
+    public void addMoney(double money) {
+        this.money += money;
+    }
+
+    public void subMoney(double money) {
+        this.money -= money;
+    }
+
     public List<Stock> getStocks() {
         return new ArrayList<>(stocks);
     }
@@ -92,7 +100,13 @@ public class Portfolio {
         watchList.add(Util.formatSymbol(symbol));
     }
 
-    public boolean removeWatchListSymbol(String symbol) {
-        return watchList.remove(Util.formatSymbol(symbol));
+    public void removeWatchListSymbol(String symbol) {
+        watchList.remove(Util.formatSymbol(symbol));
+    }
+
+    public void resetPortfolio(double startingMoney) {
+        stocks.clear();
+        watchList.clear();
+        setMoney(startingMoney);
     }
 }

@@ -17,4 +17,8 @@
     <string name="failed_fetch">Failed to fetch stock data!</string>
     <string name="shares_below_0"><![CDATA[Shares must be > 0!]]></string>
     <string name="wait_for_data">Wait for data to load!</string>
+    <string name="search_failed_fetch">Failed to fetch stock data! Did you search the correct symbol?</string>
+    <string name="add_funds_too_small">Amount to small!</string>
+    <string name="added_funds">Successfully added funds!</string>
+    <string name="simulation_reset">Simulation Reset!</string>
 </resources>

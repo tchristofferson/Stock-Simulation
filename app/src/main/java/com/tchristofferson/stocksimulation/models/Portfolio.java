@@ -79,4 +79,20 @@ public class Portfolio {
     public List<String> getWatchList() {
         return watchList;
     }
+
+    public int getWatchListSize() {
+        return watchList.size();
+    }
+
+    public String getWatchListSymbol(int index) {
+        return watchList.get(index);
+    }
+
+    public void addWatchListSymbol(String symbol) {
+        watchList.add(Util.formatSymbol(symbol));
+    }
+
+    public boolean removeWatchListSymbol(String symbol) {
+        return watchList.remove(Util.formatSymbol(symbol));
+    }
 }

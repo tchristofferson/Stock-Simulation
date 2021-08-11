@@ -97,10 +97,15 @@ public class TradeActivity extends AppCompatActivity {
                         return;
                     }
 
-                    double value = Util.formatMoney(stockInfo.getLatestPrice() * shares);
+                    double value = stockInfo.getLatestPrice() * shares;
 
                     if (buyRadioBtn.isChecked()) {
-                        portfolio.addShares(symbol, shares, value);
+                        if (portfolio.getMoney() >= value) {
+                            portfolio.addShares(symbol, shares, value);
+                        } else {
+                            Toast.makeText(this, R.string.not_enough_money, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                     } else {
                         portfolio.removeShares(symbol, shares, value);
                     }

@@ -36,7 +36,11 @@
                 android:text="$251.60"
                 android:textSize="20sp" />
 
-            <include layout="@layout/stock_chart" />
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/diversity_chart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp" />
+<!--            <include layout="@layout/stock_chart" />-->
 
             <TextView
                 android:layout_width="match_parent"

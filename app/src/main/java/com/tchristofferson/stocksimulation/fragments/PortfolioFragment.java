@@ -5,28 +5,35 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.Description;
+import com.github.mikephil.charting.data.PieData;
+import com.github.mikephil.charting.data.PieDataSet;
+import com.github.mikephil.charting.data.PieEntry;
+import com.github.mikephil.charting.utils.ColorTemplate;
 import com.tchristofferson.stocksimulation.R;
 import com.tchristofferson.stocksimulation.StockSimulationApplication;
 import com.tchristofferson.stocksimulation.Util;
 import com.tchristofferson.stocksimulation.adapters.WatchListAdapter;
 import com.tchristofferson.stocksimulation.models.Portfolio;
-import com.tchristofferson.stocksimulation.models.PriceTimePair;
 import com.tchristofferson.stocksimulation.models.Stock;
 import com.tchristofferson.stocksimulation.models.StockInfo;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 //This is the initial fragment displayed by MainActivity when the app starts
-public class PortfolioFragment extends StockChartFragment {
+public class PortfolioFragment extends Fragment {
 
     private TextView investingTextView;
+    private PieChart diversityChart;
     private WatchListAdapter adapter;
 
     public PortfolioFragment() {
@@ -37,20 +44,15 @@ public class PortfolioFragment extends StockChartFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        investingTextView = getView().findViewById(R.id.investing_amount_textview);
-        RecyclerView watchList = getView().findViewById(R.id.watch_list_recylerview);
+        investingTextView = requireView().findViewById(R.id.investing_amount_textview);
+        RecyclerView watchList = requireView().findViewById(R.id.watch_list_recylerview);
         watchList.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new WatchListAdapter(requireActivity());
         watchList.setAdapter(adapter);
 
-        List<PriceTimePair> prices = new ArrayList<>(5);
-        prices.add(new PriceTimePair("7/10", 10D));
-        prices.add(new PriceTimePair("7/11", 11D));
-        prices.add(new PriceTimePair("7/12", 10.5D));
-        prices.add(new PriceTimePair("7/13", 12D));
-        prices.add(new PriceTimePair("7/14", 15.3D));
-
-        Util.fillStockChart(stockChart, prices);
+        Portfolio portfolio = ((StockSimulationApplication) requireActivity().getApplication()).getPortfolio();
+        diversityChart = requireView().findViewById(R.id.diversity_chart);
+        populateDiversityChart(portfolio, diversityChart);
     }
 
     @Override
@@ -95,5 +97,34 @@ public class PortfolioFragment extends StockChartFragment {
                 investingTextView.setText(String.format("$%s", Util.formatMoney(value)));
             });
         }).start();
+
+        populateDiversityChart(portfolio, diversityChart);
+    }
+
+    //TODO: Eventually use value rather than shares for pie chart
+    private void populateDiversityChart(Portfolio portfolio, PieChart pieChart) {
+        pieChart.setUsePercentValues(false);
+        List<Stock> stocks = portfolio.getStocks();
+        List<PieEntry> entries = new LinkedList<>();
+
+        for (Stock stock : stocks) {
+            if (stock.getShares() > 0)
+                entries.add(new PieEntry(stock.getShares(), stock.getSymbol()));
+        }
+
+        PieDataSet dataSet = new PieDataSet(entries, "");
+        dataSet.setColors(ColorTemplate.PASTEL_COLORS);
+        PieData data = new PieData(dataSet);
+        data.setValueTextSize(12);
+
+        pieChart.setData(data);
+        Description description = new Description();
+        description.setText("");
+        pieChart.setDescription(description);
+        pieChart.setDrawHoleEnabled(false);
+        pieChart.getLegend().setEnabled(false);
+        pieChart.setTouchEnabled(false);
+
+        pieChart.invalidate();
     }
 }

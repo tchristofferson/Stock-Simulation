@@ -22,4 +22,5 @@
     <string name="added_funds">Successfully added funds!</string>
     <string name="simulation_reset">Simulation Reset!</string>
     <string name="not_enough_money">Not enough money!</string>
+    <string name="not_enough_shares">You don\'t own enough shares!</string>
 </resources>

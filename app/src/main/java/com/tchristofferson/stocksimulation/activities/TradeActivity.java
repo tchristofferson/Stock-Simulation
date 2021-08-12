@@ -14,6 +14,7 @@ import com.tchristofferson.stocksimulation.StockSimulationApplication;
 import com.tchristofferson.stocksimulation.Util;
 import com.tchristofferson.stocksimulation.core.StockCache;
 import com.tchristofferson.stocksimulation.models.Portfolio;
+import com.tchristofferson.stocksimulation.models.Stock;
 import com.tchristofferson.stocksimulation.models.StockInfo;
 
 import java.io.IOException;
@@ -107,6 +108,13 @@ public class TradeActivity extends AppCompatActivity {
                             return;
                         }
                     } else {
+                        Stock stock = portfolio.getStock(symbol);
+
+                        if (stock == null || stock.getShares() < shares) {
+                            Toast.makeText(this, R.string.not_enough_shares, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         portfolio.removeShares(symbol, shares, value);
                     }
 

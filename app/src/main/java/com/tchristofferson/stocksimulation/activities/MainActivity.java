@@ -1,12 +1,16 @@
 package com.tchristofferson.stocksimulation.activities;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.tchristofferson.stocksimulation.R;
+import com.tchristofferson.stocksimulation.StockSimulationApplication;
 import com.tchristofferson.stocksimulation.fragments.PortfolioFragment;
 import com.tchristofferson.stocksimulation.fragments.SearchFragment;
 import com.tchristofferson.stocksimulation.fragments.SettingsFragment;
+
+import java.io.IOException;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -44,5 +48,16 @@ public class MainActivity extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.home_frame, fragment)
                 .commit();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        try {
+            ((StockSimulationApplication) getApplication()).saveData();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

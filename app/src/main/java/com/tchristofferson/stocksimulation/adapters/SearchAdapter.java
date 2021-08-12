@@ -9,6 +9,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.tchristofferson.stocksimulation.R;
+import com.tchristofferson.stocksimulation.StockSimulationApplication;
 import com.tchristofferson.stocksimulation.activities.StockActivity;
 import com.tchristofferson.stocksimulation.models.Portfolio;
 import com.tchristofferson.stocksimulation.models.StockInfo;
@@ -24,12 +25,10 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
     private final Context context;
     private final List<StockInfo> searchResults;
-    private final Portfolio portfolio;
 
-    public SearchAdapter(Context context, Portfolio portfolio) {
+    public SearchAdapter(Context context) {
         this.context = context;
         this.searchResults = new ArrayList<>(1);
-        this.portfolio = portfolio;
     }
 
     @NonNull
@@ -46,7 +45,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
         StockInfo stockInfo = searchResults.get(position);
         holder.companyTextview.setText(stockInfo.getCompanyName());
         holder.symbolTextview.setText(stockInfo.getSymbol());
-        holder.watchListCheckbox.setChecked(portfolio.getWatchList().contains(stockInfo.getSymbol()));
+        holder.watchListCheckbox.setChecked(((StockSimulationApplication) context.getApplicationContext()).getWatchList().contains(stockInfo.getSymbol()));
         holder.watchListCheckbox.setText("");
 
         holder.container.setOnClickListener(v -> {
@@ -83,11 +82,12 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.SearchView
 
             watchListCheckbox.setOnClickListener(v -> {
                 String symbol = symbolTextview.getText().toString();
+                StockSimulationApplication application = (StockSimulationApplication) context.getApplicationContext();
 
                 if (watchListCheckbox.isChecked())
-                    portfolio.addWatchListSymbol(symbol);
+                    application.addToWatchList(symbol);
                 else
-                    portfolio.removeWatchListSymbol(symbol);
+                    application.removeFromWatchList(symbol);
             });
         }
     }

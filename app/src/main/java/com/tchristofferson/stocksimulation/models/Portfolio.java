@@ -11,22 +11,10 @@ public class Portfolio {
 
     private double money;
     private final List<Stock> stocks;
-    private final List<String> watchList;
 
-    public Portfolio(double money, List<Stock> stocks, List<String> watchList) {
+    public Portfolio(double money, List<Stock> stocks) {
         this.money = money;
         this.stocks = new ArrayList<>(stocks);
-        this.watchList = new ArrayList<>(watchList);
-    }
-
-    public double getInvested() {
-        double invested = 0;
-
-        for (Stock stock : stocks) {
-            invested += stock.getInvested();
-        }
-
-        return Util.formatMoney(invested);
     }
 
     public double getMoney() {
@@ -84,29 +72,8 @@ public class Portfolio {
         this.money = Util.formatMoney(this.money + value);
     }
 
-    public List<String> getWatchList() {
-        return watchList;
-    }
-
-    public int getWatchListSize() {
-        return watchList.size();
-    }
-
-    public String getWatchListSymbol(int index) {
-        return watchList.get(index);
-    }
-
-    public void addWatchListSymbol(String symbol) {
-        watchList.add(Util.formatSymbol(symbol));
-    }
-
-    public void removeWatchListSymbol(String symbol) {
-        watchList.remove(Util.formatSymbol(symbol));
-    }
-
     public void resetPortfolio(double startingMoney) {
         stocks.clear();
-        watchList.clear();
         setMoney(startingMoney);
     }
 }

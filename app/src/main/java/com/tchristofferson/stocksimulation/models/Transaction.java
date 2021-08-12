@@ -1,29 +1,14 @@
 package com.tchristofferson.stocksimulation.models;
 
-import com.tchristofferson.stocksimulation.TransactionTypeConverter;
 import com.tchristofferson.stocksimulation.Util;
 
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.TypeConverters;
-
-@Entity(tableName = "Transactions", primaryKeys = {"symbol", "timeOfPurchase"})
 public class Transaction implements Comparable<Transaction> {
 
     private final String symbol;
     private final long timeOfPurchase;
-
-    @ColumnInfo(name = "transaction_type")
-    @TypeConverters(TransactionTypeConverter.class)
     private final Type type;
-
-    @ColumnInfo(name = "shares")
     private final int shares;
-
-    @ColumnInfo(name = "sold_shares")
     private int soldShares;
-
-    @ColumnInfo(name = "price_per_share")
     private final double pricePerShare;
 
     public Transaction(String symbol, Type type, long timeOfPurchase, int shares, double pricePerShare) {

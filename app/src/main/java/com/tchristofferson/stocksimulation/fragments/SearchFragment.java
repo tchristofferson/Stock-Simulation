@@ -9,7 +9,6 @@ import android.widget.Toast;
 import com.tchristofferson.stocksimulation.R;
 import com.tchristofferson.stocksimulation.StockSimulationApplication;
 import com.tchristofferson.stocksimulation.adapters.SearchAdapter;
-import com.tchristofferson.stocksimulation.models.Portfolio;
 import com.tchristofferson.stocksimulation.models.StockInfo;
 
 import java.io.IOException;
@@ -34,12 +33,11 @@ public class SearchFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         StockSimulationApplication application = (StockSimulationApplication) requireActivity().getApplication();
-        Portfolio portfolio = application.getPortfolio();
         EditText searchEditText = requireView().findViewById(R.id.search_edit_text);
         ImageButton searchButton = requireView().findViewById(R.id.search_btn);
         RecyclerView recyclerView = requireView().findViewById(R.id.search_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-        adapter = new SearchAdapter(requireContext(), portfolio);
+        adapter = new SearchAdapter(requireContext());
         recyclerView.setAdapter(adapter);
 
         searchButton.setOnClickListener(v -> new Thread(() -> {

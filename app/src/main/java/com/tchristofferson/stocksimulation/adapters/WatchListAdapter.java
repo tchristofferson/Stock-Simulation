@@ -35,14 +35,12 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.Watc
     private final Context context;
     private final ExecutorService executorService;
     private final StockCache stockCache;
-    private final List<String> watchList;
 
     public WatchListAdapter(Activity activity) {
         this.context = activity;
         executorService = Executors.newCachedThreadPool();
         StockSimulationApplication application = (StockSimulationApplication) activity.getApplication();
         stockCache = application.getStockCache();
-        watchList = application.getPortfolio().getWatchList();
     }
 
     @NonNull
@@ -56,7 +54,7 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.Watc
 
     @Override
     public void onBindViewHolder(@NonNull WatchListViewHolder holder, int position) {
-        String symbol = watchList.get(position);
+        String symbol = ((StockSimulationApplication) context.getApplicationContext()).getWatchListSymbol(position);
         holder.symbolTextview.setText(symbol);
 
         executorService.submit(() -> {
@@ -66,9 +64,7 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.Watc
                 stockInfo = stockCache.getStockInfo(false, symbol).get(0);
             } catch (IOException e) {
                 e.printStackTrace();
-
-                Toast toast = Toast.makeText(context, R.string.failed_fetch, Toast.LENGTH_LONG);
-                ((Activity) context).runOnUiThread(toast::show);
+                ((Activity) context).runOnUiThread(() -> Toast.makeText(context, R.string.failed_fetch, Toast.LENGTH_LONG).show());
                 return;
             }
 
@@ -96,7 +92,7 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.Watc
 
     @Override
     public int getItemCount() {
-        return watchList.size();
+        return ((StockSimulationApplication) context.getApplicationContext()).getWatchListSize();
     }
 
     public static class WatchListViewHolder extends RecyclerView.ViewHolder {

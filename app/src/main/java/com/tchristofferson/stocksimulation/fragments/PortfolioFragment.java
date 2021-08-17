@@ -15,6 +15,7 @@ import com.tchristofferson.stocksimulation.R;
 import com.tchristofferson.stocksimulation.StockSimulationApplication;
 import com.tchristofferson.stocksimulation.Util;
 import com.tchristofferson.stocksimulation.adapters.WatchListAdapter;
+import com.tchristofferson.stocksimulation.core.StockCache;
 import com.tchristofferson.stocksimulation.models.Portfolio;
 import com.tchristofferson.stocksimulation.models.Stock;
 import com.tchristofferson.stocksimulation.models.StockInfo;
@@ -103,28 +104,54 @@ public class PortfolioFragment extends Fragment {
 
     //TODO: Eventually use value rather than shares for pie chart
     private void populateDiversityChart(Portfolio portfolio, PieChart pieChart) {
-        pieChart.setUsePercentValues(false);
+        StockCache stockCache = ((StockSimulationApplication) requireActivity().getApplication()).getStockCache();
         List<Stock> stocks = portfolio.getStocks();
-        List<PieEntry> entries = new LinkedList<>();
+        String[] symbols = new String[stocks.size()];
 
-        for (Stock stock : stocks) {
-            if (stock.getShares() > 0)
-                entries.add(new PieEntry(stock.getShares(), stock.getSymbol()));
+        for (int i = 0; i < stocks.size(); i++) {
+            symbols[i] = stocks.get(i).getSymbol();
         }
 
-        PieDataSet dataSet = new PieDataSet(entries, "");
-        dataSet.setColors(ColorTemplate.PASTEL_COLORS);
-        PieData data = new PieData(dataSet);
-        data.setValueTextSize(12);
+        new Thread(() -> {
+            List<StockInfo> stockData;
 
-        pieChart.setData(data);
-        Description description = new Description();
-        description.setText("");
-        pieChart.setDescription(description);
-        pieChart.setDrawHoleEnabled(false);
-        pieChart.getLegend().setEnabled(false);
-        pieChart.setTouchEnabled(false);
+            try {
+                stockData = stockCache.getStockInfo(false, symbols);
+            } catch (IOException e) {
+                e.printStackTrace();
+                requireActivity().runOnUiThread(() ->
+                        Toast.makeText(getContext(), R.string.failed_fetch, Toast.LENGTH_LONG).show());
+                return;
+            }
 
-        pieChart.invalidate();
+            requireActivity().runOnUiThread(() -> {
+                List<PieEntry> entries = new LinkedList<>();
+
+                for (StockInfo info : stockData) {
+                    Stock stock = portfolio.getStock(info.getSymbol());
+
+                    if (stock == null)
+                        continue;
+
+                    entries.add(new PieEntry((float) Util.formatMoney(info.getLatestPrice() * stock.getShares()), info.getSymbol()));
+                }
+
+                pieChart.setUsePercentValues(true);
+                PieDataSet dataSet = new PieDataSet(entries, "");
+                dataSet.setColors(ColorTemplate.PASTEL_COLORS);
+                PieData data = new PieData(dataSet);
+                data.setValueTextSize(12);
+
+                pieChart.setData(data);
+                Description description = new Description();
+                description.setText("");
+                pieChart.setDescription(description);
+                pieChart.setDrawHoleEnabled(false);
+                pieChart.getLegend().setEnabled(false);
+                pieChart.setTouchEnabled(false);
+
+                pieChart.invalidate();
+            });
+        }).start();
     }
 }

@@ -1,6 +1,7 @@
 package com.tchristofferson.stocksimulation.models;
 
 import com.google.common.base.Preconditions;
+import com.tchristofferson.stocksimulation.StockSimulationApplication;
 import com.tchristofferson.stocksimulation.Util;
 
 import java.util.ArrayList;
@@ -9,8 +10,8 @@ import java.util.List;
 
 public class Portfolio {
 
-    private double money;
     private final List<Stock> stocks;
+    private double money;
 
     public Portfolio(double money, List<Stock> stocks) {
         this.money = money;

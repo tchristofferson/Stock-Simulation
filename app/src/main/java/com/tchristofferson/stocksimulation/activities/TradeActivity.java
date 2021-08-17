@@ -128,4 +128,15 @@ public class TradeActivity extends AppCompatActivity {
             }).start();
         });
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        try {
+            ((StockSimulationApplication) getApplication()).saveData();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

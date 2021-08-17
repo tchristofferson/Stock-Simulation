@@ -10,6 +10,8 @@ import com.tchristofferson.stocksimulation.R;
 import com.tchristofferson.stocksimulation.StockSimulationApplication;
 import com.tchristofferson.stocksimulation.models.Portfolio;
 
+import java.io.IOException;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -58,6 +60,17 @@ public class SettingsFragment extends Fragment {
             resetEditText.getText().clear();
             Toast.makeText(requireContext(), R.string.simulation_reset, Toast.LENGTH_LONG).show();
         });
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        try {
+            ((StockSimulationApplication) requireActivity().getApplication()).saveData();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private double getDouble(EditText editText) {

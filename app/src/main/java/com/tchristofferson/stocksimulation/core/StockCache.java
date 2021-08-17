@@ -12,13 +12,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class StockCache {
 
     private final StockFetcher fetcher;
     private final Cache<String, StockInfo> stockInfoCache;
-    private final Cache<String, List<PriceTimePair>> historyCache;
+    private final Cache<String, HistoricalData> historyCache;
 
     public StockCache() {
         this.fetcher = new StockFetcher();
@@ -26,8 +27,8 @@ public class StockCache {
                 .expireAfterWrite(30, TimeUnit.SECONDS)
                 .build();
         this.historyCache = CacheBuilder.newBuilder()
-                .expireAfterWrite(1, TimeUnit.MINUTES)
-                .maximumSize(5)//Set max because the list can contain lots of price time pairs
+                .expireAfterAccess(1, TimeUnit.MINUTES)
+                .maximumSize(3)//Set max because it can contain lots of price time pairs
                 .build();
     }
 
@@ -70,21 +71,27 @@ public class StockCache {
 
     public List<PriceTimePair> getHistoricalData(String symbol, TimeFrame timeFrame) throws IOException {
         symbol = Util.formatSymbol(symbol);
-        List<PriceTimePair> historyList;
+        HistoricalData history = historyCache.getIfPresent(symbol);
+        List<PriceTimePair> timePairs;
 
-        synchronized (historyCache) {
-            historyList = historyCache.getIfPresent(symbol);
+        if (history == null) {
+            timePairs = fetcher.fetchPriceHistory(symbol, timeFrame);
+            history = new HistoricalData();
+            history.putData(timeFrame, timePairs);
+            historyCache.put(symbol, history);
+
+            return timePairs;
         }
 
-        if (historyList == null) {
-            historyList = fetcher.fetchPriceHistory(symbol, timeFrame);
+        timePairs = history.getData(timeFrame);
 
-            synchronized (historyCache) {
-                historyCache.put(symbol, historyList);
-            }
+        if (timePairs == null) {
+            timePairs = fetcher.fetchPriceHistory(symbol, timeFrame);
+            history.putData(timeFrame, timePairs);
+            return timePairs;
         }
 
-        return historyList;
+        return timePairs;
     }
 
     public List<PriceTimePair> getPortfolioValueHistory(Portfolio portfolio, TimeFrame timeFrame) {

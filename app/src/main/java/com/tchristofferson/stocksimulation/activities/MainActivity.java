@@ -49,15 +49,4 @@ public class MainActivity extends AppCompatActivity {
                 .replace(R.id.home_frame, fragment)
                 .commit();
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        try {
-            ((StockSimulationApplication) getApplication()).saveData();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 }

@@ -68,7 +68,12 @@ public class Util {
         stockChart.getXAxis().setValueFormatter(new ValueFormatter() {
             @Override
             public String getFormattedValue(float value) {
-                return priceData.get(((int) value)).getTime();
+                int index = (int) value;
+
+                if (index < priceData.size())
+                    return priceData.get(((int) value)).getTime();
+
+                return "";
             }
         });
 

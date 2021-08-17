@@ -65,6 +65,13 @@ public class StockActivity extends AppCompatActivity {
         todayReturnsTextview = findViewById(R.id.today_returns_textview);
         totalReturnsTextview = findViewById(R.id.total_returns_textview);
 
+        setGraphButtonListener(findViewById(R.id.one_day_btn), TimeFrame.ONE_DAY);
+        setGraphButtonListener(findViewById(R.id.one_week_btn), TimeFrame.ONE_WEEK);
+        setGraphButtonListener(findViewById(R.id.one_month_btn), TimeFrame.ONE_MONTH);
+        setGraphButtonListener(findViewById(R.id.three_month_btn), TimeFrame.THREE_MONTHS);
+        setGraphButtonListener(findViewById(R.id.one_year_btn), TimeFrame.ONE_YEAR);
+        setGraphButtonListener(findViewById(R.id.five_year_btn), TimeFrame.FIVE_YEARS);
+
         Button tradeButton = findViewById(R.id.trade_btn);
         tradeButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, TradeActivity.class);
@@ -161,5 +168,24 @@ public class StockActivity extends AppCompatActivity {
 
         return today.get(Calendar.YEAR) == calendar.get(Calendar.YEAR)
                 && today.get(Calendar.DAY_OF_YEAR) == calendar.get(Calendar.DAY_OF_YEAR);
+    }
+
+    private void setGraphButtonListener(Button button, TimeFrame timeFrame) {
+        button.setOnClickListener(v -> {
+            new Thread(() -> {
+                List<PriceTimePair> timePairs;
+
+                try {
+                    timePairs = ((StockSimulationApplication) getApplication()).getStockCache()
+                            .getHistoricalData(symbol, timeFrame);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    runOnUiThread(() -> Toast.makeText(this, R.string.failed_fetch, Toast.LENGTH_LONG).show());
+                    return;
+                }
+
+                runOnUiThread(() -> Util.fillStockChart(stockChart, timePairs));
+            }).start();
+        });
     }
 }

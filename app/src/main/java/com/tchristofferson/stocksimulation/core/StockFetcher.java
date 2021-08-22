@@ -8,17 +8,15 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.tchristofferson.stocksimulation.Util;
 import com.tchristofferson.stocksimulation.models.PriceTimePair;
-import com.tchristofferson.stocksimulation.models.Stock;
 import com.tchristofferson.stocksimulation.models.StockInfo;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -29,12 +27,14 @@ public class StockFetcher {
     private static final String SYMBOLS = "%symbols%";
     private static final String TIME = "%time%";
 
-    private static final String API_URL = "https://cloud.iexapis.com/stable/stock/";
-    private static final String API_KEY = "pk_2ab3428a78ff4baa8f2802817d6e1d00";
+//    private static final String API_URL = "https://cloud.iexapis.com/stable/stock/";
+    private static final String API_URL = "https://sandbox.iexapis.com/stable/stock/";
+//    private static final String API_KEY = "pk_4737d7d530c84625bfb92ab92df92414";
+    private static final String API_KEY = "Tpk_56105e598df74549acb30c5831ad5251";
     private static final String API_KEY_STRING = "?token=" + API_KEY;
     private static final String HISTORICAL_URL = API_URL + SYMBOL + "/chart/" + TIME + API_KEY_STRING;
     private static final String DAY_PRICES_URL = API_URL + SYMBOL + "/intraday-prices/chartIEXOnly" + API_KEY_STRING;
-    private static final String QUOTE_URL = API_URL + SYMBOL + "/quote" + API_KEY_STRING;
+//    private static final String QUOTE_URL = API_URL + SYMBOL + "/quote" + API_KEY_STRING;
     private final String QUOTE_MULTIPLE_URL = API_URL + "market/batch?symbols=" + SYMBOLS + "&types=quote&token=" + API_KEY;
 
     public List<StockInfo> fetchStockInfo(String... symbols) throws IOException {
@@ -69,8 +69,6 @@ public class StockFetcher {
             double price = obj.get("close").getAsDouble();
             pairs.add(new PriceTimePair(label, price));
         } else {
-            Log.d("StockSimulation", "array size: " + jsonArray.size());
-
             for (JsonElement element : jsonArray) {
                 JsonObject obj = element.getAsJsonObject();
 
@@ -90,11 +88,6 @@ public class StockFetcher {
         return pairs;
     }
 
-    public List<PriceTimePair> fetchPortfolioValueHistory(List<Stock> stocks, TimeFrame timeFrame) {
-        //TODO: Implement StockFetcher#fetchPortfolioValueHistory
-        return null;
-    }
-
     JsonElement getJson(String urlString, TimeFrame timeFrame, String... symbols) throws IOException {
         if (symbols.length == 0)
             throw new IllegalArgumentException("Must specify at least 1 symbol!");
@@ -110,7 +103,8 @@ public class StockFetcher {
         HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Accept", "application/json");
-        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        InputStream inputStream = connection.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         JsonElement jsonElement = JsonParser.parseReader(reader);
         reader.close();
 

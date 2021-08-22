@@ -3,16 +3,12 @@ package com.tchristofferson.stocksimulation.core;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.tchristofferson.stocksimulation.Util;
-import com.tchristofferson.stocksimulation.models.Portfolio;
 import com.tchristofferson.stocksimulation.models.PriceTimePair;
-import com.tchristofferson.stocksimulation.models.Stock;
 import com.tchristofferson.stocksimulation.models.StockInfo;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class StockCache {
@@ -60,7 +56,6 @@ public class StockCache {
 
         for (StockInfo stockInfo : fetched) {
             stockInfoList.add(stockInfo);
-
             synchronized (stockInfoCache) {
                 stockInfoCache.put(stockInfo.getSymbol(), stockInfo);
             }
@@ -71,14 +66,22 @@ public class StockCache {
 
     public List<PriceTimePair> getHistoricalData(String symbol, TimeFrame timeFrame) throws IOException {
         symbol = Util.formatSymbol(symbol);
-        HistoricalData history = historyCache.getIfPresent(symbol);
+        HistoricalData history;
+
+        synchronized (historyCache) {
+            history = historyCache.getIfPresent(symbol);
+        }
+
         List<PriceTimePair> timePairs;
 
         if (history == null) {
             timePairs = fetcher.fetchPriceHistory(symbol, timeFrame);
             history = new HistoricalData();
             history.putData(timeFrame, timePairs);
-            historyCache.put(symbol, history);
+
+            synchronized (historyCache) {
+                historyCache.put(symbol, history);
+            }
 
             return timePairs;
         }
@@ -92,10 +95,5 @@ public class StockCache {
         }
 
         return timePairs;
-    }
-
-    public List<PriceTimePair> getPortfolioValueHistory(Portfolio portfolio, TimeFrame timeFrame) {
-        //TODO: Implement getPortfolioValueHistory
-        return null;
     }
 }

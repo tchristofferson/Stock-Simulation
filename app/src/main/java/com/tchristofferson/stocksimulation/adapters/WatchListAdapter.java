@@ -19,7 +19,6 @@ import com.tchristofferson.stocksimulation.core.StockCache;
 import com.tchristofferson.stocksimulation.models.StockInfo;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -38,7 +37,7 @@ public class WatchListAdapter extends RecyclerView.Adapter<WatchListAdapter.Watc
 
     public WatchListAdapter(Activity activity) {
         this.context = activity;
-        executorService = Executors.newCachedThreadPool();
+        executorService = Executors.newSingleThreadExecutor();
         StockSimulationApplication application = (StockSimulationApplication) activity.getApplication();
         stockCache = application.getStockCache();
     }

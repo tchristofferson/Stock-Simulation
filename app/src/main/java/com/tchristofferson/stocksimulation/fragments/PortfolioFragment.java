@@ -102,7 +102,6 @@ public class PortfolioFragment extends Fragment {
         populateDiversityChart(portfolio, diversityChart);
     }
 
-    //TODO: Eventually use value rather than shares for pie chart
     private void populateDiversityChart(Portfolio portfolio, PieChart pieChart) {
         StockCache stockCache = ((StockSimulationApplication) requireActivity().getApplication()).getStockCache();
         List<Stock> stocks = portfolio.getStocks();

@@ -18,6 +18,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class StockSimulationApplication extends Application {
 
@@ -26,6 +28,7 @@ public class StockSimulationApplication extends Application {
             .registerTypeAdapter(Portfolio.class, new PortfolioSerializer())
             .create();
 
+    private final ExecutorService executorService = Executors.newCachedThreadPool();
     private Portfolio portfolio;
     private List<String> watchList;
     private StockCache stockCache;
@@ -90,6 +93,14 @@ public class StockSimulationApplication extends Application {
         writer = new BufferedWriter(new FileWriter(watchListFile));
         writer.write(watchListJson);
         writer.close();
+    }
+
+    public void runAsync(Runnable runnable) {
+        executorService.submit(runnable);
+    }
+
+    public void shutdownExecutor() {
+        executorService.shutdown();
     }
 
     private List<String> loadWatchList() throws FileNotFoundException {

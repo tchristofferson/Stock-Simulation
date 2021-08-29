@@ -105,7 +105,7 @@ public class StockActivity extends AppCompatActivity {
         int shares = stock == null ? 0 : stock.getShares();
         double invested = stock == null ? 0 : stock.getInvested();
 
-        new Thread(() -> {
+        application.runAsync(() -> {
             List<PriceTimePair> prices;
             StockInfo stockInfo;
 
@@ -147,7 +147,7 @@ public class StockActivity extends AppCompatActivity {
                     dataLoaded = true;
                 }
             });
-        }).start();
+        });
     }
 
     @Override
@@ -171,21 +171,19 @@ public class StockActivity extends AppCompatActivity {
     }
 
     private void setGraphButtonListener(Button button, TimeFrame timeFrame) {
-        button.setOnClickListener(v -> {
-            new Thread(() -> {
-                List<PriceTimePair> timePairs;
+        button.setOnClickListener(v -> ((StockSimulationApplication) getApplication()).runAsync(() -> {
+            List<PriceTimePair> timePairs;
 
-                try {
-                    timePairs = ((StockSimulationApplication) getApplication()).getStockCache()
-                            .getHistoricalData(symbol, timeFrame);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    runOnUiThread(() -> Toast.makeText(this, R.string.failed_fetch, Toast.LENGTH_LONG).show());
-                    return;
-                }
+            try {
+                timePairs = ((StockSimulationApplication) getApplication()).getStockCache()
+                        .getHistoricalData(symbol, timeFrame);
+            } catch (IOException e) {
+                e.printStackTrace();
+                runOnUiThread(() -> Toast.makeText(this, R.string.failed_fetch, Toast.LENGTH_LONG).show());
+                return;
+            }
 
-                runOnUiThread(() -> Util.fillStockChart(stockChart, timePairs));
-            }).start();
-        });
+            runOnUiThread(() -> Util.fillStockChart(stockChart, timePairs));
+        }));
     }
 }

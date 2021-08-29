@@ -43,6 +43,12 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ((StockSimulationApplication) getApplication()).shutdownExecutor();
+    }
+
     private void setCurrentFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()

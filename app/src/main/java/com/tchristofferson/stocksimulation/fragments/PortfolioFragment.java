@@ -64,7 +64,7 @@ public class PortfolioFragment extends Fragment {
         Portfolio portfolio = application.getPortfolio();
         List<Stock> stocks = portfolio.getStocks();
 
-        new Thread(() -> {
+        application.runAsync(() -> {
             String[] ownedSymbols = new String[stocks.size()];
 
             for (int i = 0; i < stocks.size(); i++) {
@@ -97,7 +97,7 @@ public class PortfolioFragment extends Fragment {
 
                 investingTextView.setText(String.format("$%s", Util.formatMoney(value)));
             });
-        }).start();
+        });
 
         populateDiversityChart(portfolio, diversityChart);
     }
@@ -111,7 +111,7 @@ public class PortfolioFragment extends Fragment {
             symbols[i] = stocks.get(i).getSymbol();
         }
 
-        new Thread(() -> {
+        ((StockSimulationApplication) requireActivity().getApplication()).runAsync(() -> {
             List<StockInfo> stockData;
 
             try {
@@ -151,6 +151,6 @@ public class PortfolioFragment extends Fragment {
 
                 pieChart.invalidate();
             });
-        }).start();
+        });
     }
 }

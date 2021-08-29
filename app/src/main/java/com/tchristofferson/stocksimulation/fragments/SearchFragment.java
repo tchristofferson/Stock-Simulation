@@ -40,7 +40,7 @@ public class SearchFragment extends Fragment {
         adapter = new SearchAdapter(requireContext());
         recyclerView.setAdapter(adapter);
 
-        searchButton.setOnClickListener(v -> new Thread(() -> {
+        searchButton.setOnClickListener(v -> application.runAsync(() -> {
             List<StockInfo> searchResults;
 
             try {
@@ -52,6 +52,6 @@ public class SearchFragment extends Fragment {
             }
 
             requireActivity().runOnUiThread(() -> adapter.populateSearchResults(searchResults));
-        }).start());
+        }));
     }
 }
